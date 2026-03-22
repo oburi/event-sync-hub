@@ -28,6 +28,12 @@ interface RawPlan {
     time?: string | null;
     location?: string | null;
   }[];
+  contacts?: {
+    name: string;
+    role?: string;
+    email?: string | null;
+    phone?: string | null;
+  }[];
 }
 
 function parseRawContent(raw: string | null): RawPlan | null {
