@@ -8,7 +8,7 @@ export default function EventsPage() {
     <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Events</h1>
-        <Link to="/events/new/import">
+        <Link to="/events/import">
           <Button size="sm" className="gap-1.5">
             <Plus className="h-3.5 w-3.5" />
             New Event

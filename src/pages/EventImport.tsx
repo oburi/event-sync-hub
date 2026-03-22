@@ -114,7 +114,7 @@ export default function EventImport() {
       await new Promise(r => setTimeout(r, 2000));
 
       setState('done');
-      setTimeout(() => navigate('/events/1'), 1500);
+      setTimeout(() => navigate('/events'), 1500);
     } catch (err: any) {
       setState('idle');
       setError(err.message || 'Failed to import document');
@@ -132,7 +132,7 @@ export default function EventImport() {
     setTimeout(() => setState('processing'), 2800);
     setTimeout(() => {
       setState('done');
-      setTimeout(() => navigate('/events/1'), 1500);
+      setTimeout(() => navigate('/events'), 1500);
     }, 4500);
   };
 
