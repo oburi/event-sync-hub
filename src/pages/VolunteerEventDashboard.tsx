@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
-/*  Mock data – realistic volunteer event scenario                     */
+/*  Mock data                                                          */
 /* ------------------------------------------------------------------ */
 
 const mockEvent = {
@@ -55,8 +55,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "1",
     title: "Finalize venue booking & room setup",
-    description:
-      "Confirm room layout with venue staff. Ensure tables, chairs, and AV equipment are in place by 3:30 PM.",
+    description: "Confirm room layout with venue staff. Ensure tables, chairs, and AV equipment are in place by 3:30 PM.",
     status: "completed",
     date: "April 4",
     time: "2:00 PM",
@@ -69,8 +68,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "2",
     title: "Registration desk check-in",
-    description:
-      "Greet attendees, hand out name tags and welcome packets. Keep the line moving smoothly.",
+    description: "Greet attendees, hand out name tags and welcome packets. Keep the line moving smoothly.",
     status: "updated",
     date: "April 5",
     time: "5:00 PM – 6:30 PM",
@@ -82,8 +80,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "3",
     title: "Greet speakers & escort to green room",
-    description:
-      "Meet speakers at the south entrance. Walk them to the green room and ensure water/snacks are ready.",
+    description: "Meet speakers at the south entrance. Walk them to the green room and ensure water/snacks are ready.",
     status: "upcoming",
     date: "April 5",
     time: "5:15 PM",
@@ -94,8 +91,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "4",
     title: "Workshop materials setup",
-    description:
-      "Distribute printed handouts and supplies to tables in Rooms 201–203. One packet per seat.",
+    description: "Distribute printed handouts and supplies to tables in Rooms 201–203. One packet per seat.",
     status: "upcoming",
     date: "April 5",
     time: "4:00 PM – 4:45 PM",
@@ -106,8 +102,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "5",
     title: "Volunteer lunch handoff",
-    description:
-      "Pick up boxed lunches from Café 9 and bring to volunteer break area. Count matches headcount.",
+    description: "Pick up boxed lunches from Café 9 and bring to volunteer break area. Count matches headcount.",
     status: "upcoming",
     date: "April 5",
     time: "12:00 PM",
@@ -118,8 +113,7 @@ const mockTasks: VolunteerTask[] = [
   {
     id: "6",
     title: "Teardown support",
-    description:
-      "Help pack supplies, take down signage, and return AV equipment. Garbage bags are in the storage closet.",
+    description: "Help pack supplies, take down signage, and return AV equipment. Garbage bags are in the storage closet.",
     status: "upcoming",
     date: "April 5",
     time: "9:30 PM – 10:00 PM",
@@ -130,21 +124,9 @@ const mockTasks: VolunteerTask[] = [
 ];
 
 const mockChanges = [
-  {
-    id: "1",
-    text: "Registration start time moved from 5:30 PM → 5:00 PM",
-    ago: "2 hours ago",
-  },
-  {
-    id: "2",
-    text: "Workshop room changed from 204 to 201–203",
-    ago: "5 hours ago",
-  },
-  {
-    id: "3",
-    text: "Teardown collaborator added: Taylor Nguyen",
-    ago: "1 day ago",
-  },
+  { id: "1", text: "Registration start time moved from 5:30 PM → 5:00 PM", ago: "2 hours ago" },
+  { id: "2", text: "Workshop room changed from 204 to 201–203", ago: "5 hours ago" },
+  { id: "3", text: "Teardown collaborator added: Taylor Nguyen", ago: "1 day ago" },
 ];
 
 interface TimelineEntry {
@@ -177,26 +159,10 @@ const mockContacts = [
 /* ------------------------------------------------------------------ */
 
 const statusConfig: Record<TaskStatus, { label: string; className: string; Icon: typeof Circle }> = {
-  upcoming: {
-    label: "Upcoming",
-    className: "bg-secondary text-secondary-foreground",
-    Icon: Circle,
-  },
-  in_progress: {
-    label: "In Progress",
-    className: "bg-primary/10 text-primary",
-    Icon: Zap,
-  },
-  completed: {
-    label: "Completed",
-    className: "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
-    Icon: CheckCircle2,
-  },
-  updated: {
-    label: "Updated",
-    className: "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]",
-    Icon: AlertCircle,
-  },
+  upcoming: { label: "Upcoming", className: "bg-secondary text-secondary-foreground", Icon: Circle },
+  in_progress: { label: "In Progress", className: "bg-primary/10 text-primary", Icon: Zap },
+  completed: { label: "Completed", className: "bg-success/10 text-success", Icon: CheckCircle2 },
+  updated: { label: "Updated", className: "bg-warning/10 text-warning", Icon: AlertCircle },
 };
 
 type Filter = "all" | "today" | "upcoming" | "completed";
@@ -232,7 +198,6 @@ export default function VolunteerEventDashboard() {
     return true;
   });
 
-  // Sort: completed tasks sink to the bottom
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     const aDone = completedIds.has(a.id) ? 1 : 0;
     const bDone = completedIds.has(b.id) ? 1 : 0;
@@ -244,72 +209,72 @@ export default function VolunteerEventDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header ─────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+      {/* Header */}
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border/60">
+        <div className="max-w-2xl mx-auto px-5 py-3.5 flex items-center gap-3">
           <Link
             to="/"
-            className="p-1.5 -ml-1.5 rounded-lg hover:bg-accent transition-colors"
+            className="p-1.5 -ml-1.5 rounded-xl hover:bg-accent transition-colors"
           >
             <ArrowLeft className="h-5 w-5 text-muted-foreground" />
           </Link>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base font-semibold text-foreground truncate">
+            <h1 className="text-[16px] font-semibold text-foreground truncate">
               {mockEvent.name}
             </h1>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground mt-0.5">
               <span>{mockEvent.date}</span>
               <span>·</span>
               <span>{mockEvent.time}</span>
             </div>
           </div>
           {mockEvent.changesCount > 0 && (
-            <Badge className="bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-0 text-[10px] font-semibold px-2 py-0.5">
+            <Badge className="bg-warning/10 text-warning border-0 text-[10px] font-semibold px-2 py-0.5 rounded-lg">
               {mockEvent.changesCount} updates
             </Badge>
           )}
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-5 space-y-6 pb-12">
-        {/* ── Event Info Strip ──────────────────────── */}
-        <div className="rounded-xl border border-border bg-card p-4 space-y-2.5">
-          <div className="flex items-center gap-2 text-sm text-foreground font-medium">
-            <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+      <div className="max-w-2xl mx-auto px-5 py-6 space-y-7 pb-16">
+        {/* Event Info */}
+        <div className="rounded-2xl border border-border bg-card p-4.5 space-y-3">
+          <div className="flex items-center gap-2.5 text-[14px] text-foreground font-medium">
+            <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
             {mockEvent.location}
           </div>
-          <div className="flex items-center gap-2 text-sm text-foreground font-medium">
-            <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <div className="flex items-center gap-2.5 text-[14px] text-foreground font-medium">
+            <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
             {mockEvent.time}
           </div>
-          <div className="flex items-center gap-2 text-sm text-foreground font-medium">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <div className="flex items-center gap-2.5 text-[14px] text-foreground font-medium">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
             {mockEvent.date}
           </div>
-          <p className="text-[11px] text-muted-foreground pt-1">
+          <p className="text-[12px] text-muted-foreground pt-1">
             Last updated {mockEvent.lastUpdated}
           </p>
         </div>
 
-        {/* ── What Changed ─────────────────────────── */}
+        {/* What Changed */}
         {mockChanges.length > 0 && (
           <section>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-5 w-5 rounded-full bg-[hsl(var(--warning))]/10 flex items-center justify-center">
-                <AlertCircle className="h-3 w-3 text-[hsl(var(--warning))]" />
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="h-6 w-6 rounded-full bg-warning/10 flex items-center justify-center">
+                <AlertCircle className="h-3.5 w-3.5 text-warning" />
               </div>
-              <h2 className="text-sm font-semibold text-foreground">What Changed</h2>
+              <h2 className="text-[15px] font-semibold text-foreground">What Changed</h2>
             </div>
             <div className="space-y-2">
               {mockChanges.map((c) => (
                 <div
                   key={c.id}
-                  className="flex gap-3 items-start rounded-lg border border-[hsl(var(--warning))]/20 bg-[hsl(var(--warning))]/5 px-3.5 py-2.5"
+                  className="flex gap-3.5 items-start rounded-2xl border border-warning/20 bg-warning/5 px-4 py-3"
                 >
-                  <RefreshCw className="h-3.5 w-3.5 text-[hsl(var(--warning))] mt-0.5 shrink-0" />
+                  <RefreshCw className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground leading-snug">{c.text}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{c.ago}</p>
+                    <p className="text-[14px] text-foreground leading-snug">{c.text}</p>
+                    <p className="text-[12px] text-muted-foreground mt-0.5">{c.ago}</p>
                   </div>
                 </div>
               ))}
@@ -317,14 +282,14 @@ export default function VolunteerEventDashboard() {
           </section>
         )}
 
-        {/* ── Filter Chips ─────────────────────────── */}
+        {/* Filter Chips */}
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           {(["all", "today", "upcoming", "completed"] as Filter[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors",
+                "px-3.5 py-1.5 rounded-xl text-[13px] font-medium whitespace-nowrap transition-colors",
                 filter === f
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-accent"
@@ -335,22 +300,19 @@ export default function VolunteerEventDashboard() {
           ))}
         </div>
 
-        {/* ── My Responsibilities ──────────────────── */}
+        {/* My Responsibilities */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-foreground mb-3 flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
             My Responsibilities
-            <span className="text-xs font-normal text-muted-foreground">
+            <span className="text-[13px] font-normal text-muted-foreground">
               ({filteredTasks.length})
             </span>
           </h2>
 
-          {/* Pre-event tasks */}
           {preEventTasks.length > 0 && (
             <div className="mb-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                Pre-Event
-              </p>
+              <p className="section-title mb-2.5">Pre-Event</p>
               <div className="space-y-2.5">
                 {preEventTasks.map((task) => (
                   <TaskCard
@@ -358,9 +320,7 @@ export default function VolunteerEventDashboard() {
                     task={task}
                     expanded={expandedTask === task.id}
                     isCompleted={completedIds.has(task.id)}
-                    onToggle={() =>
-                      setExpandedTask(expandedTask === task.id ? null : task.id)
-                    }
+                    onToggle={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
                     onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
@@ -368,13 +328,10 @@ export default function VolunteerEventDashboard() {
             </div>
           )}
 
-          {/* Day-of tasks */}
           {dayOfTasks.length > 0 && (
             <div>
               {preEventTasks.length > 0 && (
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                  Day-Of
-                </p>
+                <p className="section-title mb-2.5">Day-Of</p>
               )}
               <div className="space-y-2.5">
                 {dayOfTasks.map((task) => (
@@ -383,9 +340,7 @@ export default function VolunteerEventDashboard() {
                     task={task}
                     expanded={expandedTask === task.id}
                     isCompleted={completedIds.has(task.id)}
-                    onToggle={() =>
-                      setExpandedTask(expandedTask === task.id ? null : task.id)
-                    }
+                    onToggle={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
                     onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
@@ -394,7 +349,7 @@ export default function VolunteerEventDashboard() {
           )}
 
           {filteredTasks.length === 0 && (
-            <div className="text-center py-8 text-sm text-muted-foreground">
+            <div className="text-center py-10 text-[14px] text-muted-foreground">
               No tasks match this filter.
             </div>
           )}
@@ -402,14 +357,13 @@ export default function VolunteerEventDashboard() {
 
         <Separator />
 
-        {/* ── Event Timeline ──────────────────────── */}
+        {/* Event Timeline */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-foreground mb-3 flex items-center gap-2">
             <Clock className="h-4 w-4 text-primary" />
             Event Timeline
           </h2>
           <div className="relative pl-5">
-            {/* vertical line */}
             <div className="absolute left-[7px] top-1 bottom-1 w-px bg-border" />
             <div className="space-y-3">
               {mockTimeline.map((entry, i) => (
@@ -424,7 +378,7 @@ export default function VolunteerEventDashboard() {
                   />
                   <span
                     className={cn(
-                      "text-xs font-mono w-16 shrink-0 pt-0.5",
+                      "text-[13px] font-mono w-16 shrink-0 pt-0.5",
                       entry.isMine ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                   >
@@ -432,7 +386,7 @@ export default function VolunteerEventDashboard() {
                   </span>
                   <span
                     className={cn(
-                      "text-sm leading-snug pt-0.5",
+                      "text-[14px] leading-snug pt-0.5",
                       entry.isMine ? "text-foreground font-medium" : "text-muted-foreground"
                     )}
                   >
@@ -446,9 +400,9 @@ export default function VolunteerEventDashboard() {
 
         <Separator />
 
-        {/* ── Contacts ────────────────────────────── */}
+        {/* Contacts */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-foreground mb-3 flex items-center gap-2">
             <Phone className="h-4 w-4 text-primary" />
             Key Contacts
           </h2>
@@ -456,27 +410,27 @@ export default function VolunteerEventDashboard() {
             {mockContacts.map((c) => (
               <div
                 key={c.name}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5"
+                className="flex items-center gap-3.5 rounded-2xl border border-border bg-card p-4"
               >
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold shrink-0">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[14px] font-semibold shrink-0">
                   {c.name.split(" ").map((n) => n[0]).join("")}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{c.name}</p>
-                  <p className="text-xs text-muted-foreground">{c.role}</p>
+                  <p className="text-[14px] font-medium text-foreground">{c.name}</p>
+                  <p className="text-[13px] text-muted-foreground">{c.role}</p>
                 </div>
                 <div className="flex gap-1.5">
                   <a
                     href={`tel:${c.phone}`}
-                    className="p-2 rounded-lg hover:bg-accent transition-colors"
+                    className="p-2 rounded-xl hover:bg-accent transition-colors"
                   >
-                    <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Phone className="h-4 w-4 text-muted-foreground" />
                   </a>
                   <a
                     href={`mailto:${c.email}`}
-                    className="p-2 rounded-lg hover:bg-accent transition-colors"
+                    className="p-2 rounded-xl hover:bg-accent transition-colors"
                   >
-                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                    <Mail className="h-4 w-4 text-muted-foreground" />
                   </a>
                 </div>
               </div>
@@ -512,17 +466,17 @@ function TaskCard({
   return (
     <div
       className={cn(
-        "w-full text-left rounded-xl border bg-card transition-all",
+        "w-full text-left rounded-2xl border bg-card transition-all",
         isCompleted
           ? "border-border opacity-60"
           : task.status === "updated"
-            ? "border-[hsl(var(--warning))]/30"
+            ? "border-warning/30"
             : "border-border",
         "hover:shadow-sm"
       )}
     >
-      <div className="p-3.5">
-        <div className="flex items-start gap-3">
+      <div className="p-4">
+        <div className="flex items-start gap-3.5">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -531,29 +485,29 @@ function TaskCard({
             className={cn(
               "mt-0.5 h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors",
               isCompleted
-                ? "border-[hsl(var(--success))] bg-[hsl(var(--success))]"
+                ? "border-success bg-success"
                 : "border-border hover:border-primary"
             )}
             aria-label={isCompleted ? "Mark incomplete" : "Mark complete"}
           >
-            {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success-foreground))]" />}
+            {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-success-foreground" />}
           </button>
 
           <button onClick={onToggle} className="flex-1 min-w-0 text-left">
             <div className="flex items-center gap-2 mb-1">
-              <Badge className={cn("text-[10px] font-semibold border-0 px-2 py-0", cfg.className)}>
+              <Badge className={cn("text-[10px] font-semibold border-0 px-2 py-0 rounded-md", cfg.className)}>
                 <StatusIcon className="h-2.5 w-2.5 mr-1" />
                 {cfg.label}
               </Badge>
               {task.changeNote && !isCompleted && (
-                <Badge className="text-[10px] font-semibold border-0 px-2 py-0 bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]">
+                <Badge className="text-[10px] font-semibold border-0 px-2 py-0 rounded-md bg-warning/10 text-warning">
                   Changed
                 </Badge>
               )}
             </div>
             <h3
               className={cn(
-                "text-sm font-semibold leading-snug transition-colors",
+                "text-[14px] font-semibold leading-snug transition-colors",
                 isCompleted ? "text-muted-foreground line-through" : "text-foreground"
               )}
             >
@@ -570,18 +524,18 @@ function TaskCard({
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground pl-8">
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[13px] text-muted-foreground pl-9">
+          <span className="flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" />
             {task.time}
           </span>
-          <span className="flex items-center gap-1">
-            <MapPin className="h-3 w-3" />
+          <span className="flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5" />
             <span className="truncate max-w-[140px]">{task.location}</span>
           </span>
           {task.collaborators.length > 0 && (
-            <span className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
+            <span className="flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5" />
               {task.collaborators.join(", ")}
             </span>
           )}
@@ -589,28 +543,28 @@ function TaskCard({
       </div>
 
       {expanded && (
-        <div className="px-3.5 pb-3.5 pt-0 space-y-2.5 border-t border-border mt-0 pt-3">
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <div className="px-4 pb-4 pt-0 space-y-3 border-t border-border mt-0 pt-3">
+          <p className="text-[14px] text-muted-foreground leading-relaxed">
             {task.description}
           </p>
 
           {task.changeNote && (
-            <div className="flex gap-2 items-start rounded-lg bg-[hsl(var(--warning))]/5 px-3 py-2">
-              <RefreshCw className="h-3 w-3 text-[hsl(var(--warning))] mt-0.5 shrink-0" />
-              <p className="text-xs text-[hsl(var(--warning))]">{task.changeNote}</p>
+            <div className="flex gap-2.5 items-start rounded-xl bg-warning/5 px-3.5 py-2.5">
+              <RefreshCw className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
+              <p className="text-[13px] text-warning">{task.changeNote}</p>
             </div>
           )}
 
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
             {task.dueDate && (
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5" />
                 Due {task.dueDate}
               </span>
             )}
             {task.contact && (
-              <span className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
+              <span className="flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5" />
                 Contact: {task.contact}
               </span>
             )}

@@ -52,18 +52,18 @@ export default function EventsPage() {
   ];
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-5 sm:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Events</h1>
+        <h1 className="font-serif text-3xl text-foreground">Events</h1>
         <div className="flex gap-2">
           <Link to="/events/import">
-            <Button variant="outline" size="sm" className="gap-1.5">
+            <Button variant="outline" size="sm" className="gap-1.5 rounded-xl h-9">
               <Upload className="h-3.5 w-3.5" />
-              Import Event
+              Import
             </Button>
           </Link>
           <Link to="/events/import">
-            <Button size="sm" className="gap-1.5">
+            <Button size="sm" className="gap-1.5 rounded-xl h-9">
               <Plus className="h-3.5 w-3.5" />
               New Event
             </Button>
@@ -76,21 +76,24 @@ export default function EventsPage() {
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
       ) : allEvents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No events yet. Import or create one to get started.</p>
+        <div className="text-center py-16">
+          <p className="font-serif text-xl text-foreground mb-2">No events yet</p>
+          <p className="text-[14px] text-muted-foreground">Import or create one to get started.</p>
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {allEvents.map(event => (
             <Link key={event.id} to={`/events/${event.id}`}>
               <div className="card-elevated group cursor-pointer flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-primary/8 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-primary" />
+                  <div className="h-10 w-10 rounded-xl bg-primary/8 flex items-center justify-center">
+                    <Calendar className="h-[18px] w-[18px] text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{event.name}</p>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                    <p className="text-[15px] font-medium text-foreground">{event.name}</p>
+                    <div className="flex items-center gap-3 mt-1 text-[13px] text-muted-foreground">
                       <span>{formatLocalDate(event.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.time}</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{event.time}</span>
                       <span>{event.location}</span>
                     </div>
                   </div>

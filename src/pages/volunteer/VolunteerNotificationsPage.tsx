@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Bell, Calendar, RefreshCw, UserPlus, Clock, CheckCircle2, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { Bell, Calendar, RefreshCw, UserPlus, Clock, CheckCircle2 } from "lucide-react";
 import { volunteerNotifications, type VolunteerNotification } from "@/lib/volunteer-data";
 import { cn } from "@/lib/utils";
 
 type Filter = "all" | "unread";
 
 const typeConfig: Record<VolunteerNotification["type"], { Icon: typeof Bell; className: string }> = {
-  change: { Icon: RefreshCw, className: "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]" },
+  change: { Icon: RefreshCw, className: "bg-warning/10 text-warning" },
   assignment: { Icon: UserPlus, className: "bg-primary/10 text-primary" },
   reminder: { Icon: Clock, className: "bg-secondary text-muted-foreground" },
   update: { Icon: Bell, className: "bg-primary/10 text-primary" },
@@ -31,18 +29,18 @@ export default function VolunteerNotificationsPage() {
   const unreadCount = volunteerNotifications.filter((n) => !readIds.has(n.id)).length;
 
   return (
-    <div className="p-5 max-w-2xl mx-auto space-y-5 animate-fade-in">
+    <div className="p-5 sm:p-8 max-w-2xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Notifications</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="font-serif text-3xl text-foreground">Notifications</h1>
+          <p className="text-[15px] text-muted-foreground mt-1.5">
             {unreadCount > 0 ? `${unreadCount} unread` : "You're all caught up"}
           </p>
         </div>
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="text-xs text-primary hover:underline font-medium"
+            className="text-[13px] text-primary hover:underline font-medium"
           >
             Mark all read
           </button>
@@ -56,7 +54,7 @@ export default function VolunteerNotificationsPage() {
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize",
+              "px-3.5 py-1.5 rounded-xl text-[13px] font-medium transition-colors capitalize",
               filter === f
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground hover:bg-accent"
@@ -68,7 +66,7 @@ export default function VolunteerNotificationsPage() {
       </div>
 
       {/* List */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {notifications.map((n) => {
           const isUnread = !readIds.has(n.id);
           const cfg = typeConfig[n.type];
@@ -79,27 +77,27 @@ export default function VolunteerNotificationsPage() {
               key={n.id}
               onClick={() => markRead(n.id)}
               className={cn(
-                "w-full text-left rounded-xl border bg-card p-3.5 transition-all hover:shadow-sm",
+                "w-full text-left rounded-2xl border bg-card p-4 transition-all hover:shadow-sm",
                 isUnread ? "border-primary/20" : "border-border"
               )}
             >
-              <div className="flex items-start gap-3">
-                <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center shrink-0", cfg.className)}>
-                  <TypeIcon className="h-3.5 w-3.5" />
+              <div className="flex items-start gap-3.5">
+                <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0", cfg.className)}>
+                  <TypeIcon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    {isUnread && <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+                    {isUnread && <div className="h-2 w-2 rounded-full bg-primary shrink-0" />}
                     <p className={cn(
-                      "text-sm leading-snug",
+                      "text-[14px] leading-snug",
                       isUnread ? "text-foreground font-medium" : "text-muted-foreground"
                     )}>
                       {n.message}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
+                  <div className="flex items-center gap-2 mt-1.5 text-[12px] text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-2.5 w-2.5" />
+                      <Calendar className="h-3 w-3" />
                       {n.eventName}
                     </span>
                     <span>·</span>
@@ -113,10 +111,10 @@ export default function VolunteerNotificationsPage() {
       </div>
 
       {notifications.length === 0 && (
-        <div className="text-center py-12 text-sm text-muted-foreground">
-          <CheckCircle2 className="h-10 w-10 mx-auto text-[hsl(var(--success))]/40 mb-3" />
-          <p className="font-medium text-foreground">All caught up!</p>
-          <p className="text-xs mt-1">No unread notifications.</p>
+        <div className="text-center py-16 text-muted-foreground">
+          <CheckCircle2 className="h-12 w-12 mx-auto text-success/30 mb-4" />
+          <p className="font-serif text-xl text-foreground mb-1">All caught up!</p>
+          <p className="text-[14px]">No unread notifications.</p>
         </div>
       )}
     </div>
