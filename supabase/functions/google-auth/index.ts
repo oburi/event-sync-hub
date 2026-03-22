@@ -19,23 +19,20 @@ serve(async (req) => {
       });
     }
 
-    const { sessionId, redirectUri } = await req.json();
-
-    const callbackUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/google-callback`;
+    const redirectUri = `${Deno.env.get('SUPABASE_URL')}/functions/v1/google-callback`;
 
     const params = new URLSearchParams({
       client_id: clientId,
-      redirect_uri: callbackUrl,
+      redirect_uri: redirectUri,
       response_type: 'code',
-      scope: 'https://www.googleapis.com/auth/documents.readonly',
+      scope: 'https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/calendar.readonly',
       access_type: 'offline',
       prompt: 'consent',
-      state: JSON.stringify({ sessionId, redirectUri }),
     });
 
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 
-    return new Response(JSON.stringify({ authUrl }), {
+    return new Response(JSON.stringify({ url }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
