@@ -1,9 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const { sessionId } = await req.json().catch(() => ({}));
-const state = sessionId || "default";
-// Add &state=${state} to the Google OAuth URL params
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -15,6 +11,10 @@ serve(async (req) => {
   }
 
   try {
+    // ✅ Must be INSIDE the serve handler
+    const { sessionId } = await req.json().catch(() => ({}));
+    const state = sessionId || "default";
+
     const clientId = Deno.env.get("GOOGLE_CLIENT_ID");
     if (!clientId) {
       return new Response(JSON.stringify({ error: "GOOGLE_CLIENT_ID not configured" }), {
@@ -32,6 +32,7 @@ serve(async (req) => {
       scope: "https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/calendar.readonly",
       access_type: "offline",
       prompt: "consent",
+      state: state, // ✅ passes sessionId through OAuth flow
     });
 
     const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
