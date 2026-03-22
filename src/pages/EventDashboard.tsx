@@ -97,6 +97,8 @@ function buildContactsFromPlan(plan: RawPlan): TeamMember[] {
     name: role,
     role: "Assigned Role",
     email: "",
+    phone: "",
+    availability: "Available",
   }));
 }
 
