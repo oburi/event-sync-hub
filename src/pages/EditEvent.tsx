@@ -218,13 +218,22 @@ export default function EditEvent() {
                   placeholder="Description"
                   rows={2}
                 />
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                     <Input
                       value={task.assignedRole}
                       onChange={(e) => updateTask(i, "assignedRole", e.target.value)}
-                      placeholder="Assigned role"
+                      placeholder="Role (e.g. Coordinator)"
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <Input
+                      value={task.assignedVolunteer}
+                      onChange={(e) => updateTask(i, "assignedVolunteer", e.target.value)}
+                      placeholder="Volunteer name"
                       className="text-sm"
                     />
                   </div>
