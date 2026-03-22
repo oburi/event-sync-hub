@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Calendar, Clock, MapPin, Users, AlertTriangle, FileText,
-  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2
+  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { mockEvents, mockSources, mockTasks, mockTimeline, mockConflicts, mockTeam } from "@/lib/mock-data";
 import ConflictDrawer from "@/components/ConflictDrawer";
 import { NotionLogo } from "@/components/icons/NotionLogo";
