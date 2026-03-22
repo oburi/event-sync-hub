@@ -1,4 +1,4 @@
-import { Calendar, Clock, MapPin, ArrowRight, Bell, Users, Zap } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, Bell, Users, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { currentVolunteer, volunteerEvents, volunteerNotifications } from "@/lib/volunteer-data";
@@ -47,7 +47,7 @@ export default function VolunteerHome() {
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="flex items-center gap-2 mb-2.5">
               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Zap className="h-4 w-4 text-primary" />
+                <ClipboardList className="h-4 w-4 text-primary" />
               </div>
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Next Task</span>
             </div>

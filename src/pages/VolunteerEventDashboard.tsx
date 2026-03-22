@@ -14,7 +14,7 @@ import {
   Mail,
   ChevronDown,
   ChevronUp,
-  Zap,
+  Play,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -160,7 +160,7 @@ const mockContacts = [
 
 const statusConfig: Record<TaskStatus, { label: string; className: string; Icon: typeof Circle }> = {
   upcoming: { label: "Upcoming", className: "bg-secondary text-secondary-foreground", Icon: Circle },
-  in_progress: { label: "In Progress", className: "bg-primary/10 text-primary", Icon: Zap },
+  in_progress: { label: "In Progress", className: "bg-primary/10 text-primary", Icon: Play },
   completed: { label: "Completed", className: "bg-success/10 text-success", Icon: CheckCircle2 },
   updated: { label: "Updated", className: "bg-warning/10 text-warning", Icon: AlertCircle },
 };
