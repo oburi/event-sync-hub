@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppModeProvider } from "@/contexts/AppModeContext";
+import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import AppLayout from "@/components/AppLayout";
 import HomePage from "@/pages/HomePage";
 import EventsPage from "@/pages/EventsPage";
@@ -12,6 +14,10 @@ import VolunteerEditor from "@/pages/VolunteerEditor";
 import VolunteerView from "@/pages/VolunteerView";
 import SignUp from "@/pages/SignUp";
 import OrgSetup from "@/pages/OrgSetup";
+import VolunteerSetup from "@/pages/VolunteerSetup";
+import TeamPage from "@/pages/TeamPage";
+import NotificationsPage from "@/pages/NotificationsPage";
+import CalendarPage from "@/pages/CalendarPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,23 +25,31 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/org-setup" element={<OrgSetup />} />
-          <Route path="/volunteer/:eventId/:volunteerId" element={<VolunteerView />} />
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/events/:id" element={<EventDashboard />} />
-            <Route path="/events/:id/import" element={<EventImport />} />
-            <Route path="/events/:id/volunteer-editor" element={<VolunteerEditor />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppModeProvider>
+        <NotificationsProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/org-setup" element={<OrgSetup />} />
+              <Route path="/volunteer-setup" element={<VolunteerSetup />} />
+              <Route path="/volunteer/:eventId/:volunteerId" element={<VolunteerView />} />
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/events/:id" element={<EventDashboard />} />
+                <Route path="/events/:id/import" element={<EventImport />} />
+                <Route path="/events/:id/volunteer-editor" element={<VolunteerEditor />} />
+                <Route path="/team" element={<TeamPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </NotificationsProvider>
+      </AppModeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
