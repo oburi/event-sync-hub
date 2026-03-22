@@ -120,7 +120,7 @@ export default function VolunteerDashboard() {
                 </div>
               </div>
               <Link
-                to={`/events/${event.id}`}
+                to={`/volunteer/event/${event.id}`}
                 className="text-xs text-primary hover:underline flex items-center gap-0.5"
               >
                 View <ChevronRight className="h-3 w-3" />
