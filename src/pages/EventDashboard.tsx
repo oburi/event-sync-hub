@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   Calendar, Clock, MapPin, Users, AlertTriangle, FileText,
-  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send
+  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -123,11 +123,13 @@ function buildContactsFromPlan(plan: RawPlan): TeamMember[] {
 
 export default function EventDashboard() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [showConflicts, setShowConflicts] = useState(false);
   const [dbEvent, setDbEvent] = useState<(Event & { raw_content?: string | null; source_type?: string | null; source_url?: string | null; updated_at_raw?: string }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [isImported, setIsImported] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (id && isUUID(id)) {
@@ -235,6 +237,29 @@ export default function EventDashboard() {
               Edit Event
             </Button>
           </Link>
+          {isImported && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+              disabled={deleting}
+              onClick={async () => {
+                if (!confirm("Are you sure you want to delete this event? This cannot be undone.")) return;
+                setDeleting(true);
+                const { error } = await supabase.from('events').delete().eq('id', id!);
+                setDeleting(false);
+                if (error) {
+                  toast.error("Failed to delete: " + error.message);
+                } else {
+                  toast.success("Event deleted");
+                  navigate('/events');
+                }
+              }}
+            >
+              {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+              Delete
+            </Button>
+          )}
         </div>
       </div>
 
