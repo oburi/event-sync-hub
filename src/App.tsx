@@ -38,10 +38,10 @@ const App = () => (
               <Route element={<AppLayout />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/events" element={<EventsPage />} />
-                <Route path="/events/:id" element={<EventDashboard />} />
                 <Route path="/events/import" element={<EventImport />} />
                 <Route path="/events/:id/import" element={<EventImport />} />
                 <Route path="/events/:id/volunteer-editor" element={<VolunteerEditor />} />
+                <Route path="/events/:id" element={<EventDashboard />} />
                 <Route path="/team" element={<TeamPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
