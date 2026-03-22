@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp } from "lucide-react";
+import SlackLogo from "@/components/icons/SlackLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,7 +25,7 @@ function extractGoogleDocId(url: string): string | null {
 }
 
 const sources = [
-  { id: "notion" as const, name: "Notion", icon: "📝", desc: "Import from a Notion page", color: "bg-foreground/5" },
+  { id: "notion" as const, name: "Notion", icon: null, desc: "Import from a Notion page", color: "bg-foreground/5" },
   { id: "google_doc" as const, name: "Google Docs", icon: "📄", desc: "Import from Google Docs", color: "bg-blue-50" },
   { id: "pdf" as const, name: "PDF Upload", icon: "📎", desc: "Upload a PDF document", color: "bg-red-50" },
 ];
