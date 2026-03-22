@@ -21,9 +21,17 @@ const SYSTEM_PROMPT = `You are an event planning assistant. Extract and return o
       "time": "string - when this task happens or null",
       "location": "string - where this task happens or null"
     }
+  ],
+  "contacts": [
+    {
+      "name": "string - person's full name",
+      "role": "string - their role or title e.g. 'Event Lead', 'Keynote Speaker'",
+      "email": "string - email address or null",
+      "phone": "string - phone number or null"
+    }
   ]
 }
-Extract as much structured information as possible from the provided text. Generate 3-8 logical tasks based on the event content. Return ONLY the JSON object, no markdown or explanation.`;
+Extract as much structured information as possible from the provided text. Generate 3-8 logical tasks based on the event content. Extract ALL named people mentioned with their roles and contact info. Return ONLY the JSON object, no markdown or explanation.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

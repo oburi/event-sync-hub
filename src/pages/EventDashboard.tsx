@@ -28,6 +28,12 @@ interface RawPlan {
     time?: string | null;
     location?: string | null;
   }[];
+  contacts?: {
+    name: string;
+    role?: string;
+    email?: string | null;
+    phone?: string | null;
+  }[];
 }
 
 function parseRawContent(raw: string | null): RawPlan | null {
@@ -87,6 +93,18 @@ function buildSourceFromEvent(dbEvent: { source_type?: string | null; source_url
 }
 
 function buildContactsFromPlan(plan: RawPlan): TeamMember[] {
+  // Use explicitly extracted contacts if available
+  if (plan.contacts && plan.contacts.length > 0) {
+    return plan.contacts.map((c, i) => ({
+      id: `contact-${i}`,
+      name: c.name,
+      role: c.role || "Team Member",
+      email: c.email || "",
+      phone: c.phone || "",
+      availability: "Available",
+    }));
+  }
+  // Fallback: derive from task assignedRoles
   const roles = new Map<string, string>();
   for (const t of plan.tasks || []) {
     if (t.assignedRole && !roles.has(t.assignedRole)) {
@@ -357,12 +375,18 @@ export default function EventDashboard() {
               <div className="space-y-2">
                 {contacts.map(member => (
                   <div key={member.id} className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium text-primary">
-                      {member.name.split(' ').map(n => n[0]).join('')}
+                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium text-primary shrink-0">
+                      {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs font-medium text-foreground">{member.name}</p>
                       <p className="text-[10px] text-muted-foreground">{member.role}</p>
+                      {member.email && (
+                        <a href={`mailto:${member.email}`} className="text-[10px] text-primary hover:underline">{member.email}</a>
+                      )}
+                      {member.phone && (
+                        <p className="text-[10px] text-muted-foreground">{member.phone}</p>
+                      )}
                     </div>
                   </div>
                 ))}
