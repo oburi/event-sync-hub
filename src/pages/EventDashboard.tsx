@@ -123,11 +123,13 @@ function buildContactsFromPlan(plan: RawPlan): TeamMember[] {
 
 export default function EventDashboard() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [showConflicts, setShowConflicts] = useState(false);
   const [dbEvent, setDbEvent] = useState<(Event & { raw_content?: string | null; source_type?: string | null; source_url?: string | null; updated_at_raw?: string }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [isImported, setIsImported] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (id && isUUID(id)) {
