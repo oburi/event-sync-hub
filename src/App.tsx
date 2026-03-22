@@ -10,6 +10,7 @@ import HomePage from "@/pages/HomePage";
 import EventsPage from "@/pages/EventsPage";
 import EventDashboard from "@/pages/EventDashboard";
 import EventImport from "@/pages/EventImport";
+import EditEvent from "@/pages/EditEvent";
 import VolunteerEditor from "@/pages/VolunteerEditor";
 import VolunteerView from "@/pages/VolunteerView";
 import SignUp from "@/pages/SignUp";
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/events" element={<EventsPage />} />
                 <Route path="/events/import" element={<EventImport />} />
                 <Route path="/events/:id/import" element={<EventImport />} />
+                <Route path="/events/:id/edit" element={<EditEvent />} />
                 <Route path="/events/:id/volunteer-editor" element={<VolunteerEditor />} />
                 <Route path="/events/:id" element={<EventDashboard />} />
                 <Route path="/team" element={<TeamPage />} />
