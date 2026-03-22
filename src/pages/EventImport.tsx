@@ -49,11 +49,10 @@ export default function EventImport() {
 
   const checkGoogleConnection = useCallback(async () => {
     try {
-      const sessionId = getSessionId();
       const { data } = await supabase
         .from('google_tokens' as any)
         .select('id')
-        .eq('user_session_id', sessionId)
+        .eq('user_session_id', 'default')
         .maybeSingle();
       setGoogleConnected(!!data);
     } catch {
@@ -67,19 +66,14 @@ export default function EventImport() {
 
   const handleGoogleAuth = async () => {
     setError(null);
-    const sessionId = getSessionId();
-    const redirectUri = window.location.href.split('?')[0];
-
-    const { data, error: fnError } = await supabase.functions.invoke('google-auth', {
-      body: { sessionId, redirectUri },
-    });
+    const { data, error: fnError } = await supabase.functions.invoke('google-auth');
 
     if (fnError || data?.error) {
       setError(data?.error || fnError?.message || 'Failed to start Google auth');
       return;
     }
 
-    window.location.href = data.authUrl;
+    window.location.href = data.url;
   };
 
   const handleGoogleDocImport = async () => {
@@ -91,8 +85,6 @@ export default function EventImport() {
     }
 
     setState('connecting');
-    const sessionId = getSessionId();
-
     try {
       // Step 1: Connecting
       await new Promise(r => setTimeout(r, 500));
@@ -100,7 +92,7 @@ export default function EventImport() {
 
       // Step 2: Fetch document
       const { data, error: fnError } = await supabase.functions.invoke('fetch-google-doc', {
-        body: { sessionId, documentId },
+        body: { sessionId: 'default', documentId },
       });
 
       if (fnError || data?.error) {

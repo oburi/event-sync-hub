@@ -5,13 +5,10 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
-    const stateParam = url.searchParams.get('state');
 
-    if (!code || !stateParam) {
-      return new Response('Missing code or state parameter', { status: 400 });
+    if (!code) {
+      return new Response('Missing code parameter', { status: 400 });
     }
-
-    const { sessionId, redirectUri } = JSON.parse(stateParam);
 
     const clientId = Deno.env.get('GOOGLE_CLIENT_ID');
     const clientSecret = Deno.env.get('GOOGLE_CLIENT_SECRET');
@@ -45,6 +42,9 @@ serve(async (req) => {
 
     const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
+    // Use a default session id since we're not passing state
+    const sessionId = 'default';
+
     await supabase.from('google_tokens').upsert({
       user_session_id: sessionId,
       access_token: tokenData.access_token,
@@ -54,13 +54,12 @@ serve(async (req) => {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_session_id' });
 
-    // Redirect back to the app with success
-    const returnUrl = new URL(redirectUri);
-    returnUrl.searchParams.set('google_connected', 'true');
+    // Redirect back to the app
+    const returnUrl = 'https://id-preview--d468a051-3e18-4936-bc66-114f8110ceea.lovable.app/events/import?google_connected=true';
 
     return new Response(null, {
       status: 302,
-      headers: { Location: returnUrl.toString() },
+      headers: { Location: returnUrl },
     });
   } catch (error) {
     console.error('Error in google-callback:', error);
