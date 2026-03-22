@@ -4,10 +4,10 @@ import { Upload, FileText, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, Lo
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-type ImportSource = 'notion' | 'google_doc' | 'pdf' | null;
-type ImportState = 'idle' | 'connecting' | 'importing' | 'processing' | 'done';
+type ImportSource = "notion" | "google_doc" | "pdf" | null;
+type ImportState = "idle" | "connecting" | "importing" | "processing" | "done";
 
-const SESSION_ID_KEY = 'syncra_session_id';
+const SESSION_ID_KEY = "syncra_session_id";
 
 function getSessionId(): string {
   let id = localStorage.getItem(SESSION_ID_KEY);
@@ -24,37 +24,37 @@ function extractGoogleDocId(url: string): string | null {
 }
 
 const sources = [
-  { id: 'notion' as const, name: 'Notion', icon: '📝', desc: 'Import from a Notion page', color: 'bg-foreground/5' },
-  { id: 'google_doc' as const, name: 'Google Docs', icon: '📄', desc: 'Import from Google Docs', color: 'bg-blue-50' },
-  { id: 'pdf' as const, name: 'PDF Upload', icon: '📎', desc: 'Upload a PDF document', color: 'bg-red-50' },
+  { id: "notion" as const, name: "Notion", icon: "📝", desc: "Import from a Notion page", color: "bg-foreground/5" },
+  { id: "google_doc" as const, name: "Google Docs", icon: "📄", desc: "Import from Google Docs", color: "bg-blue-50" },
+  { id: "pdf" as const, name: "PDF Upload", icon: "📎", desc: "Upload a PDF document", color: "bg-red-50" },
 ];
 
 export default function EventImport() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<ImportSource>(null);
-  const [state, setState] = useState<ImportState>('idle');
-  const [url, setUrl] = useState('');
+  const [state, setState] = useState<ImportState>("idle");
+  const [url, setUrl] = useState("");
   const [googleConnected, setGoogleConnected] = useState(false);
   const [fetchedContent, setFetchedContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Check if returning from Google OAuth
   useEffect(() => {
-    if (searchParams.get('google_connected') === 'true') {
+    if (searchParams.get("google_connected") === "true") {
       setGoogleConnected(true);
-      setSelected('google_doc');
+      setSelected("google_doc");
       // Clean the query param from the URL
-      window.history.replaceState({}, '', window.location.pathname);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, [searchParams]);
 
   const checkGoogleConnection = useCallback(async () => {
     try {
       const { data } = await supabase
-        .from('google_tokens' as any)
-        .select('id')
-        .eq('user_session_id', 'default')
+        .from("google_tokens" as any)
+        .select("id")
+        .eq("user_session_id", getSessionId())
         .maybeSingle();
       setGoogleConnected(!!data);
     } catch {
@@ -68,10 +68,10 @@ export default function EventImport() {
 
   const handleGoogleAuth = async () => {
     setError(null);
-    const { data, error: fnError } = await supabase.functions.invoke('google-auth');
+    const { data, error: fnError } = await supabase.functions.invoke("google-auth");
 
     if (fnError || data?.error) {
-      setError(data?.error || fnError?.message || 'Failed to start Google auth');
+      setError(data?.error || fnError?.message || "Failed to start Google auth");
       return;
     }
 
@@ -82,70 +82,70 @@ export default function EventImport() {
     setError(null);
     const documentId = extractGoogleDocId(url);
     if (!documentId) {
-      setError('Invalid Google Docs URL. Expected format: https://docs.google.com/document/d/...');
+      setError("Invalid Google Docs URL. Expected format: https://docs.google.com/document/d/...");
       return;
     }
 
-    setState('connecting');
+    setState("connecting");
     try {
       // Step 1: Connecting
-      await new Promise(r => setTimeout(r, 500));
-      setState('importing');
+      await new Promise((r) => setTimeout(r, 500));
+      setState("importing");
 
       // Step 2: Fetch document
-      const { data, error: fnError } = await supabase.functions.invoke('fetch-google-doc', {
-        body: { sessionId: 'default', documentId },
+      const { data, error: fnError } = await supabase.functions.invoke("fetch-google-doc", {
+        body: { sessionId: "default", documentId },
       });
 
       if (fnError || data?.error) {
         if (data?.needsAuth) {
-          setState('idle');
+          setState("idle");
           setGoogleConnected(false);
-          setError('Google authorization expired. Please reconnect.');
+          setError("Google authorization expired. Please reconnect.");
           return;
         }
         throw new Error(data?.error || fnError?.message);
       }
 
-      setState('processing');
+      setState("processing");
       setFetchedContent(data.content);
 
       // Step 3: Create event in database
       const { data: newEvent, error: insertError } = await supabase
-        .from('events')
+        .from("events")
         .insert({
-          name: data.title || 'Imported Event',
-          description: (data.content || '').slice(0, 500),
+          name: data.title || "Imported Event",
+          description: (data.content || "").slice(0, 500),
           raw_content: data.content,
-          source_type: 'google_doc',
+          source_type: "google_doc",
           source_url: url,
-          status: 'draft',
+          status: "draft",
         })
-        .select('id')
+        .select("id")
         .single();
 
       if (insertError) throw new Error(insertError.message);
 
-      setState('done');
+      setState("done");
       setTimeout(() => navigate(`/events/${newEvent.id}`), 1500);
     } catch (err: any) {
-      setState('idle');
-      setError(err.message || 'Failed to import document');
+      setState("idle");
+      setError(err.message || "Failed to import document");
     }
   };
 
   const handleImport = () => {
-    if (selected === 'google_doc') {
+    if (selected === "google_doc") {
       handleGoogleDocImport();
       return;
     }
     // Simulated flow for notion/pdf
-    setState('connecting');
-    setTimeout(() => setState('importing'), 1200);
-    setTimeout(() => setState('processing'), 2800);
+    setState("connecting");
+    setTimeout(() => setState("importing"), 1200);
+    setTimeout(() => setState("processing"), 2800);
     setTimeout(() => {
-      setState('done');
-      setTimeout(() => navigate('/events'), 1500);
+      setState("done");
+      setTimeout(() => navigate("/events"), 1500);
     }, 4500);
   };
 
@@ -164,15 +164,18 @@ export default function EventImport() {
         </div>
       )}
 
-      {state === 'idle' && (
+      {state === "idle" && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {sources.map(source => (
+            {sources.map((source) => (
               <button
                 key={source.id}
-                onClick={() => { setSelected(source.id); setError(null); }}
+                onClick={() => {
+                  setSelected(source.id);
+                  setError(null);
+                }}
                 className={`card-elevated text-left transition-all ${
-                  selected === source.id ? 'ring-2 ring-primary shadow-md' : ''
+                  selected === source.id ? "ring-2 ring-primary shadow-md" : ""
                 }`}
               >
                 <div className={`h-10 w-10 rounded-lg ${source.color} flex items-center justify-center text-lg mb-3`}>
@@ -184,7 +187,7 @@ export default function EventImport() {
             ))}
           </div>
 
-          {selected === 'google_doc' && !googleConnected && (
+          {selected === "google_doc" && !googleConnected && (
             <div className="space-y-3 animate-fade-in">
               <div className="rounded-lg border border-border bg-muted/30 p-6 text-center">
                 <LogIn className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
@@ -200,7 +203,7 @@ export default function EventImport() {
             </div>
           )}
 
-          {selected === 'google_doc' && googleConnected && (
+          {selected === "google_doc" && googleConnected && (
             <div className="space-y-3 animate-fade-in">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                 <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
@@ -214,7 +217,7 @@ export default function EventImport() {
                     type="url"
                     placeholder="https://docs.google.com/document/d/..."
                     value={url}
-                    onChange={e => setUrl(e.target.value)}
+                    onChange={(e) => setUrl(e.target.value)}
                     className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
                   />
                 </div>
@@ -226,7 +229,7 @@ export default function EventImport() {
             </div>
           )}
 
-          {selected === 'notion' && (
+          {selected === "notion" && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium text-foreground">Paste URL</label>
               <div className="flex gap-2">
@@ -236,7 +239,7 @@ export default function EventImport() {
                     type="url"
                     placeholder="https://notion.so/your-page..."
                     value={url}
-                    onChange={e => setUrl(e.target.value)}
+                    onChange={(e) => setUrl(e.target.value)}
                     className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
                   />
                 </div>
@@ -248,7 +251,7 @@ export default function EventImport() {
             </div>
           )}
 
-          {selected === 'pdf' && (
+          {selected === "pdf" && (
             <div className="animate-fade-in">
               <button
                 onClick={handleImport}
@@ -263,9 +266,9 @@ export default function EventImport() {
         </>
       )}
 
-      {state !== 'idle' && (
+      {state !== "idle" && (
         <div className="card-elevated text-center py-12 animate-fade-in">
-          {state === 'done' ? (
+          {state === "done" ? (
             <>
               <CheckCircle2 className="h-12 w-12 mx-auto text-success mb-4" />
               <p className="text-lg font-medium text-foreground">Event imported successfully!</p>
@@ -275,26 +278,26 @@ export default function EventImport() {
             <>
               <Loader2 className="h-10 w-10 mx-auto text-primary animate-spin mb-4" />
               <p className="text-sm font-medium text-foreground">
-                {state === 'connecting' && 'Connecting to Google Docs…'}
-                {state === 'importing' && 'Fetching document content…'}
-                {state === 'processing' && 'AI is extracting event details…'}
+                {state === "connecting" && "Connecting to Google Docs…"}
+                {state === "importing" && "Fetching document content…"}
+                {state === "processing" && "AI is extracting event details…"}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {state === 'connecting' && 'Establishing connection'}
-                {state === 'importing' && 'Reading and parsing content'}
-                {state === 'processing' && 'Generating timeline, tasks, and volunteer assignments'}
+                {state === "connecting" && "Establishing connection"}
+                {state === "importing" && "Reading and parsing content"}
+                {state === "processing" && "Generating timeline, tasks, and volunteer assignments"}
               </p>
             </>
           )}
 
           <div className="flex justify-center gap-1.5 mt-6">
-            {['connecting', 'importing', 'processing', 'done'].map((step, i) => (
+            {["connecting", "importing", "processing", "done"].map((step, i) => (
               <div
                 key={step}
                 className={`h-1.5 rounded-full transition-all duration-500 ${
-                  ['connecting', 'importing', 'processing', 'done'].indexOf(state) >= i
-                    ? 'w-8 bg-primary'
-                    : 'w-8 bg-muted'
+                  ["connecting", "importing", "processing", "done"].indexOf(state) >= i
+                    ? "w-8 bg-primary"
+                    : "w-8 bg-muted"
                 }`}
               />
             ))}
