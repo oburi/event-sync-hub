@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Users, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { formatLocalDate } from "@/lib/utils";
 
 interface PlanTask {
   title: string;
@@ -97,7 +98,7 @@ export default function VolunteerDashboard() {
                   {event.date && (
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {new Date(event.date).toLocaleDateString("en-US", {
+                      {formatLocalDate(event.date!, {
                         weekday: "short",
                         month: "short",
                         day: "numeric",

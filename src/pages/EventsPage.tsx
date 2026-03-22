@@ -4,6 +4,7 @@ import { Plus, Calendar, Clock, CheckCircle2, FileEdit, Loader2, Upload } from "
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 
 interface DbEvent {
   id: string;
@@ -88,7 +89,7 @@ export default function EventsPage() {
                   <div>
                     <p className="text-sm font-medium text-foreground">{event.name}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                      <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span>{formatLocalDate(event.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.time}</span>
                       <span>{event.location}</span>
                     </div>

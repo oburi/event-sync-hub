@@ -4,6 +4,7 @@ import { Eye, EyeOff, GripVertical, Send, ArrowLeft, CheckCircle2, Loader2 } fro
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents, mockTasks, mockTimeline, mockSources } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 import type { Event } from "@/lib/mock-data";
 
 const isUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
@@ -36,7 +37,7 @@ function buildSections(event: Event, plan: RawPlan | null, sourceType?: string |
     : mockSources.map((s) => `• ${s.name} (${s.type}) — last synced ${s.lastFetched}`).join("\n");
 
   return [
-    { id: "1", title: "Event Details", visible: true, content: `${event.name}\n${new Date(event.date).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}\n${event.time}\n${event.location}` },
+    { id: "1", title: "Event Details", visible: true, content: `${event.name}\n${formatLocalDate(event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}\n${event.time}\n${event.location}` },
     { id: "2", title: "Volunteer Responsibilities", visible: true, content: responsibilitiesContent },
     { id: "3", title: "Run of Show", visible: true, content: timelineContent },
     { id: "4", title: "Key Logistics", visible: true, content: event.location !== "TBD" ? `• Location: ${event.location}\n• Time: ${event.time}` : "• Parking available in Lot A (south entrance)\n• Wear club t-shirts\n• First aid kit at Info Desk" },
