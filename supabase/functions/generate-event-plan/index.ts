@@ -41,7 +41,6 @@ serve(async (req) => {
     }
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-
     if (!GEMINI_API_KEY) {
       return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
@@ -53,7 +52,9 @@ serve(async (req) => {
       ? `Extract event details from this PDF document (base64 encoded). The PDF content in base64: ${pdfBase64.substring(0, 50000)}`
       : `Extract event details from the following document text:\n\n${text}`;
 
+    // ✅ Updated to gemini-2.0-flash
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
     const aiResponse = await fetch(geminiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,7 +68,7 @@ serve(async (req) => {
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
       console.error("Gemini API error:", aiResponse.status, errText);
-      return new Response(JSON.stringify({ error: `Gemini API error: ${aiResponse.status}` }), {
+      return new Response(JSON.stringify({ error: `Gemini API error: ${aiResponse.status} ${errText}` }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
