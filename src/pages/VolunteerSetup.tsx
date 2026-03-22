@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Zap, Calendar, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Calendar, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleLogo } from "@/components/icons/GoogleLogo";
@@ -19,9 +19,6 @@ export default function VolunteerSetup() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="w-full max-w-sm space-y-6 animate-fade-in">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
           <span className="text-lg font-semibold">Syncra</span>
         </div>
 

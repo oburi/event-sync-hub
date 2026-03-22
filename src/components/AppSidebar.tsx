@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, CalendarDays, Zap, Bell } from "lucide-react";
+import { Home, Calendar, Users, CalendarDays, Bell } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAppMode } from "@/contexts/AppModeContext";
@@ -40,9 +40,6 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-5 pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary shadow-sm">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
           {!collapsed && (
             <div className="animate-fade-in">
               <p className="text-[15px] font-semibold text-foreground tracking-tight">Syncra</p>
