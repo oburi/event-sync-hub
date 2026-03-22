@@ -91,6 +91,7 @@ export default function EditEvent() {
         title: t.title,
         description: t.description,
         assignedRole: t.assignedRole || null,
+        assignedVolunteer: t.assignedVolunteer || null,
         time: t.time || null,
         location: t.location || null,
       })),
