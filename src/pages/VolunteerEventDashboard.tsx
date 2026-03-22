@@ -209,17 +209,38 @@ export default function VolunteerEventDashboard() {
   const { eventId } = useParams();
   const [filter, setFilter] = useState<Filter>("all");
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  const toggleComplete = (taskId: string) => {
+    setCompletedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  };
+
+  const getEffectiveStatus = (task: VolunteerTask): TaskStatus =>
+    completedIds.has(task.id) ? "completed" : task.status;
 
   const filteredTasks = mockTasks.filter((t) => {
+    const effective = getEffectiveStatus(t);
     if (filter === "all") return true;
     if (filter === "today") return t.date === "April 5";
-    if (filter === "upcoming") return t.status === "upcoming";
-    if (filter === "completed") return t.status === "completed";
+    if (filter === "upcoming") return effective === "upcoming";
+    if (filter === "completed") return effective === "completed";
     return true;
   });
 
-  const preEventTasks = filteredTasks.filter((t) => t.isPreEvent);
-  const dayOfTasks = filteredTasks.filter((t) => !t.isPreEvent);
+  // Sort: completed tasks sink to the bottom
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    const aDone = completedIds.has(a.id) ? 1 : 0;
+    const bDone = completedIds.has(b.id) ? 1 : 0;
+    return aDone - bDone;
+  });
+
+  const preEventTasks = sortedTasks.filter((t) => t.isPreEvent);
+  const dayOfTasks = sortedTasks.filter((t) => !t.isPreEvent);
 
   return (
     <div className="min-h-screen bg-background">
@@ -336,9 +357,11 @@ export default function VolunteerEventDashboard() {
                     key={task.id}
                     task={task}
                     expanded={expandedTask === task.id}
+                    isCompleted={completedIds.has(task.id)}
                     onToggle={() =>
                       setExpandedTask(expandedTask === task.id ? null : task.id)
                     }
+                    onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
               </div>
@@ -359,9 +382,11 @@ export default function VolunteerEventDashboard() {
                     key={task.id}
                     task={task}
                     expanded={expandedTask === task.id}
+                    isCompleted={completedIds.has(task.id)}
                     onToggle={() =>
                       setExpandedTask(expandedTask === task.id ? null : task.id)
                     }
+                    onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
               </div>
@@ -470,56 +495,82 @@ export default function VolunteerEventDashboard() {
 function TaskCard({
   task,
   expanded,
+  isCompleted,
   onToggle,
+  onToggleComplete,
 }: {
   task: VolunteerTask;
   expanded: boolean;
+  isCompleted: boolean;
   onToggle: () => void;
+  onToggleComplete: () => void;
 }) {
-  const cfg = statusConfig[task.status];
+  const effectiveStatus: TaskStatus = isCompleted ? "completed" : task.status;
+  const cfg = statusConfig[effectiveStatus];
   const StatusIcon = cfg.Icon;
 
   return (
-    <button
-      onClick={onToggle}
+    <div
       className={cn(
         "w-full text-left rounded-xl border bg-card transition-all",
-        task.status === "updated"
-          ? "border-[hsl(var(--warning))]/30"
-          : "border-border",
+        isCompleted
+          ? "border-border opacity-60"
+          : task.status === "updated"
+            ? "border-[hsl(var(--warning))]/30"
+            : "border-border",
         "hover:shadow-sm"
       )}
     >
-      {/* Card header — always visible */}
       <div className="p-3.5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
+        <div className="flex items-start gap-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleComplete();
+            }}
+            className={cn(
+              "mt-0.5 h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors",
+              isCompleted
+                ? "border-[hsl(var(--success))] bg-[hsl(var(--success))]"
+                : "border-border hover:border-primary"
+            )}
+            aria-label={isCompleted ? "Mark incomplete" : "Mark complete"}
+          >
+            {isCompleted && <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success-foreground))]" />}
+          </button>
+
+          <button onClick={onToggle} className="flex-1 min-w-0 text-left">
             <div className="flex items-center gap-2 mb-1">
               <Badge className={cn("text-[10px] font-semibold border-0 px-2 py-0", cfg.className)}>
                 <StatusIcon className="h-2.5 w-2.5 mr-1" />
                 {cfg.label}
               </Badge>
-              {task.changeNote && (
+              {task.changeNote && !isCompleted && (
                 <Badge className="text-[10px] font-semibold border-0 px-2 py-0 bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]">
                   Changed
                 </Badge>
               )}
             </div>
-            <h3 className="text-sm font-semibold text-foreground leading-snug">
+            <h3
+              className={cn(
+                "text-sm font-semibold leading-snug transition-colors",
+                isCompleted ? "text-muted-foreground line-through" : "text-foreground"
+              )}
+            >
               {task.title}
             </h3>
-          </div>
-          <div className="pt-1">
+          </button>
+
+          <button onClick={onToggle} className="pt-1 shrink-0">
             {expanded ? (
               <ChevronUp className="h-4 w-4 text-muted-foreground" />
             ) : (
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             )}
-          </div>
+          </button>
         </div>
 
-        {/* Meta row — always visible */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground pl-8">
           <span className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {task.time}
@@ -537,7 +588,6 @@ function TaskCard({
         </div>
       </div>
 
-      {/* Expanded details */}
       {expanded && (
         <div className="px-3.5 pb-3.5 pt-0 space-y-2.5 border-t border-border mt-0 pt-3">
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -567,6 +617,6 @@ function TaskCard({
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 }
