@@ -20,7 +20,7 @@ export default function SignUp() {
             <span className="text-xl font-semibold text-primary-foreground tracking-tight">Syncra</span>
           </div>
           <h2 className="font-serif text-4xl text-primary-foreground leading-tight">
-            Your volunteers deserve clarity, not chaos.
+            One source of truth for every volunteer.
           </h2>
           <p className="text-[15px] text-primary-foreground/70 mt-5 leading-relaxed">
             Import your event details from anywhere. Syncra organizes everything and gives every volunteer a simple, mobile-friendly view of exactly what they need to do.
@@ -90,6 +90,6 @@ export default function SignUp() {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
