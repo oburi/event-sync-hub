@@ -1,24 +1,40 @@
+import { useState, useEffect } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { useNotifications } from "@/contexts/NotificationsContext";
+import { SearchCommand } from "@/components/SearchCommand";
 
 export function TopBar() {
   const navigate = useNavigate();
   const { mode, setMode } = useAppMode();
   const { unreadCount } = useNotifications();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   return (
+    <>
+    <SearchCommand open={searchOpen} onOpenChange={setSearchOpen} />
     <header className="flex h-14 items-center justify-between border-b bg-card px-4">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
-        <div className="hidden sm:flex items-center gap-2 rounded-lg bg-muted px-3 py-1.5">
+        <button onClick={() => setSearchOpen(true)} className="hidden sm:flex items-center gap-2 rounded-lg bg-muted px-3 py-1.5 cursor-pointer hover:bg-muted/80 transition-colors">
           <Search className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">Search…</span>
           <kbd className="ml-4 rounded bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground border">⌘K</kbd>
-        </div>
+        </button>
       </div>
       <div className="flex items-center gap-2">
         {/* Mode Toggle */}
