@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Calendar, Clock, MapPin, Users, AlertTriangle, FileText,
-  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2
+  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { mockEvents, mockSources, mockTasks, mockTimeline, mockConflicts, mockTeam } from "@/lib/mock-data";
 import ConflictDrawer from "@/components/ConflictDrawer";
 import { NotionLogo } from "@/components/icons/NotionLogo";
@@ -108,6 +109,7 @@ export default function EventDashboard() {
   const [dbEvent, setDbEvent] = useState<(Event & { raw_content?: string | null; source_type?: string | null; source_url?: string | null; updated_at_raw?: string }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [isImported, setIsImported] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     if (id && isUUID(id)) {
@@ -178,6 +180,31 @@ export default function EventDashboard() {
           </div>
         </div>
         <div className="flex gap-2">
+          {isImported && event.status === 'draft' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={publishing}
+              onClick={async () => {
+                setPublishing(true);
+                const { error } = await supabase
+                  .from('events')
+                  .update({ status: 'published' })
+                  .eq('id', id!);
+                setPublishing(false);
+                if (error) {
+                  toast.error("Failed to publish: " + error.message);
+                } else {
+                  toast.success("Event published!");
+                  setDbEvent(prev => prev ? { ...prev, status: 'published' } : prev);
+                }
+              }}
+            >
+              {publishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+              Publish
+            </Button>
+          )}
           <Link to={`/events/${event.id}/volunteer-editor`}>
             <Button variant="outline" size="sm" className="gap-1.5">
               <Eye className="h-3.5 w-3.5" />
