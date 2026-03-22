@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp } from "lucide-react";
-import NotionLogoIcon from "@/components/icons/NotionImportLogo";
+import { NotionLogo } from "@/components/icons/NotionLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -276,7 +276,7 @@ export default function EventImport() {
                 }`}
               >
                 <div className={`h-10 w-10 rounded-lg ${source.color} flex items-center justify-center text-lg mb-3`}>
-                  {source.id === "notion" ? <NotionLogoIcon className="h-5 w-5" /> : source.icon}
+                  {source.id === "notion" ? <NotionLogo className="h-5 w-5" /> : source.icon}
                 </div>
                 <p className="text-sm font-medium text-foreground">{source.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{source.desc}</p>
