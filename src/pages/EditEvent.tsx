@@ -54,6 +54,7 @@ export default function EditEvent() {
                     title: t.title || "",
                     description: t.description || "",
                     assignedRole: t.assignedRole || "",
+                    assignedVolunteer: t.assignedVolunteer || "",
                     time: t.time || "",
                     location: t.location || "",
                   }))
