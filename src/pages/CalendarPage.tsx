@@ -1,15 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { mockEvents } from "@/lib/mock-data";
 
 type ViewMode = "weekly" | "monthly";
 
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 7); // 7 AM to 8 PM
+interface CalEvent {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  status: string;
+}
+
+const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
 
 export default function CalendarPage() {
   const [view, setView] = useState<ViewMode>("monthly");
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 22)); // March 22, 2026
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 22));
+  const [dbEvents, setDbEvents] = useState<CalEvent[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("events")
+      .select("id, name, date, time, status")
+      .eq("status", "published")
+      .then(({ data }) => {
+        if (data) {
+          setDbEvents(
+            data
+              .filter((e) => e.date)
+              .map((e) => ({
+                id: e.id,
+                name: e.name,
+                date: e.date!,
+                time: e.time || "",
+                status: e.status,
+              }))
+          );
+        }
+      });
+  }, []);
+
+  const allEvents: CalEvent[] = [
+    ...dbEvents,
+    ...mockEvents
+      .filter((e) => !dbEvents.some((db) => db.id === e.id))
+      .map((e) => ({ id: e.id, name: e.name, date: e.date, time: e.time, status: e.status })),
+  ];
 
   const weekStart = new Date(currentDate);
   weekStart.setDate(currentDate.getDate() - currentDate.getDay());
@@ -21,7 +61,6 @@ export default function CalendarPage() {
   });
 
   const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
   const calendarStart = new Date(monthStart);
   calendarStart.setDate(calendarStart.getDate() - calendarStart.getDay());
 
@@ -34,7 +73,7 @@ export default function CalendarPage() {
 
   const getEventsForDate = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
-    return mockEvents.filter(e => e.date === dateStr);
+    return allEvents.filter((e) => e.date === dateStr);
   };
 
   const navigateWeek = (dir: number) => {
@@ -73,7 +112,6 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center gap-3">
         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => view === "weekly" ? navigateWeek(-1) : navigateMonth(-1)}>
           <ChevronLeft className="h-4 w-4" />
@@ -91,19 +129,17 @@ export default function CalendarPage() {
 
       {view === "weekly" ? (
         <div className="border rounded-xl overflow-hidden bg-card">
-          {/* Header */}
           <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b">
             <div className="p-2" />
             {weekDays.map((day, i) => (
               <div key={i} className="p-2 text-center border-l">
                 <p className="text-[10px] text-muted-foreground uppercase">{dayNames[day.getDay()]}</p>
-                <p className={`text-sm font-medium ${day.toDateString() === new Date(2026, 2, 22).toDateString() ? "text-primary" : "text-foreground"}`}>
+                <p className={`text-sm font-medium ${day.toDateString() === new Date().toDateString() ? "text-primary" : "text-foreground"}`}>
                   {day.getDate()}
                 </p>
               </div>
             ))}
           </div>
-          {/* Time grid */}
           <div className="max-h-[500px] overflow-y-auto">
             {HOURS.map(hour => (
               <div key={hour} className="grid grid-cols-[60px_repeat(7,1fr)] min-h-[48px]">
@@ -123,9 +159,11 @@ export default function CalendarPage() {
                   return (
                     <div key={i} className="border-l border-t p-0.5">
                       {hourEvents.map(ev => (
-                        <div key={ev.id} className="rounded bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 font-medium truncate">
-                          {ev.name}
-                        </div>
+                        <Link key={ev.id} to={`/events/${ev.id}`}>
+                          <div className="rounded bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 font-medium truncate hover:bg-primary/20 transition-colors">
+                            {ev.name}
+                          </div>
+                        </Link>
                       ))}
                     </div>
                   );
@@ -136,7 +174,6 @@ export default function CalendarPage() {
         </div>
       ) : (
         <div className="border rounded-xl overflow-hidden bg-card">
-          {/* Header */}
           <div className="grid grid-cols-7 border-b">
             {dayNames.map(name => (
               <div key={name} className="p-2 text-center text-[10px] font-medium text-muted-foreground uppercase">
@@ -144,11 +181,10 @@ export default function CalendarPage() {
               </div>
             ))}
           </div>
-          {/* Days */}
           <div className="grid grid-cols-7">
             {monthDays.map((day, i) => {
               const isCurrentMonth = day.getMonth() === currentDate.getMonth();
-              const isToday = day.toDateString() === new Date(2026, 2, 22).toDateString();
+              const isToday = day.toDateString() === new Date().toDateString();
               const events = getEventsForDate(day);
               return (
                 <div key={i} className={`min-h-[80px] p-1.5 border-t ${i % 7 !== 0 ? 'border-l' : ''} ${!isCurrentMonth ? 'bg-muted/30' : ''}`}>
@@ -159,13 +195,15 @@ export default function CalendarPage() {
                   </span>
                   <div className="mt-0.5 space-y-0.5">
                     {events.map(ev => (
-                      <div key={ev.id} className={`rounded px-1.5 py-0.5 text-[10px] font-medium truncate ${
-                        ev.status === 'published' ? 'bg-primary/10 text-primary' :
-                        ev.status === 'completed' ? 'bg-muted text-muted-foreground' :
-                        'bg-warning/10 text-warning'
-                      }`}>
-                        {ev.name}
-                      </div>
+                      <Link key={ev.id} to={`/events/${ev.id}`}>
+                        <div className={`rounded px-1.5 py-0.5 text-[10px] font-medium truncate hover:opacity-80 transition-opacity ${
+                          ev.status === 'published' ? 'bg-primary/10 text-primary' :
+                          ev.status === 'completed' ? 'bg-muted text-muted-foreground' :
+                          'bg-warning/10 text-warning'
+                        }`}>
+                          {ev.name}
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
