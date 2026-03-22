@@ -188,6 +188,35 @@ export default function EventImport() {
     }
   };
 
+  const handleNotionImport = async () => {
+    setError(null);
+    if (!url) return;
+
+    setState("connecting");
+    try {
+      await new Promise((r) => setTimeout(r, 400));
+      setState("importing");
+
+      const { data, error: fnError } = await supabase.functions.invoke("fetch-notion-page", {
+        body: { pageUrl: url },
+      });
+
+      if (fnError || data?.error) {
+        throw new Error(data?.error || fnError?.message);
+      }
+
+      setState("processing");
+      const plan = await callGenerateEventPlan({ text: data.content });
+      const eventId = await createEventFromPlan(plan, "notion", url);
+
+      setState("done");
+      setTimeout(() => navigate(`/events/${eventId}`), 1200);
+    } catch (err: any) {
+      setState("idle");
+      setError(err.message || "Failed to import from Notion");
+    }
+  };
+
   const handleImport = () => {
     if (selected === "google_doc") {
       handleGoogleDocImport();
@@ -197,14 +226,10 @@ export default function EventImport() {
       handlePdfImport();
       return;
     }
-    // Simulated flow for notion
-    setState("connecting");
-    setTimeout(() => setState("importing"), 1200);
-    setTimeout(() => setState("processing"), 2800);
-    setTimeout(() => {
-      setState("done");
-      setTimeout(() => navigate("/events"), 1500);
-    }, 4500);
+    if (selected === "notion") {
+      handleNotionImport();
+      return;
+    }
   };
 
   const statusLabel = {
