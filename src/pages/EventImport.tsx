@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp } from "lucide-react";
+import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp, MessageSquare } from "lucide-react";
 import { NotionLogo } from "@/components/icons/NotionLogo";
 import { GoogleDocsLogo } from "@/components/icons/GoogleDocsLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-type ImportSource = "notion" | "google_doc" | "pdf" | null;
+type ImportSource = "notion" | "google_doc" | "pdf" | "slack" | null;
 type ImportState = "idle" | "connecting" | "importing" | "processing" | "done";
 
 const SESSION_ID_KEY = "syncra_session_id";
@@ -26,9 +26,10 @@ function extractGoogleDocId(url: string): string | null {
 }
 
 const sources = [
-  { id: "notion" as const, name: "Notion", icon: null, desc: "Import from a Notion page", color: "bg-foreground/5" },
-  { id: "google_doc" as const, name: "Google Docs", icon: "📄", desc: "Import from Google Docs", color: "bg-blue-50" },
-  { id: "pdf" as const, name: "PDF Upload", icon: "📎", desc: "Upload a PDF document", color: "bg-red-50" },
+  { id: "notion" as const, name: "Notion", desc: "Import from a Notion page", color: "bg-foreground/5" },
+  { id: "google_doc" as const, name: "Google Docs", desc: "Import from Google Docs", color: "bg-blue-50" },
+  { id: "pdf" as const, name: "PDF Upload", desc: "Upload a PDF document", color: "bg-red-50" },
+  { id: "slack" as const, name: "Slack", desc: "Import from Slack messages", color: "bg-purple-50" },
 ];
 
 async function callGenerateEventPlan(payload: { text?: string; pdfBase64?: string }) {
@@ -263,7 +264,7 @@ export default function EventImport() {
 
       {state === "idle" && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             {sources.map((source) => (
               <button
                 key={source.id}
@@ -277,7 +278,7 @@ export default function EventImport() {
                 }`}
               >
                 <div className={`h-10 w-10 rounded-lg ${source.color} flex items-center justify-center text-lg mb-3`}>
-                  {source.id === "notion" ? <NotionLogo className="h-5 w-5" /> : source.id === "google_doc" ? <GoogleDocsLogo className="h-5 w-5" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
+                  {source.id === "notion" ? <NotionLogo className="h-5 w-5" /> : source.id === "google_doc" ? <GoogleDocsLogo className="h-5 w-5" /> : source.id === "slack" ? <MessageSquare className="h-5 w-5 text-purple-600" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
                 </div>
                 <p className="text-sm font-medium text-foreground">{source.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{source.desc}</p>
@@ -386,6 +387,23 @@ export default function EventImport() {
                   </Button>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Slack - coming soon placeholder */}
+          {selected === "slack" && (
+            <div className="space-y-3 animate-fade-in">
+              <div className="rounded-lg border border-border bg-muted/30 p-6 text-center">
+                <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground">Import from Slack</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  Pick a channel, thread, or time frame to import event details from Slack messages.
+                </p>
+                <Button disabled className="gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Connect Slack (Coming Soon)
+                </Button>
+              </div>
             </div>
           )}
         </>
