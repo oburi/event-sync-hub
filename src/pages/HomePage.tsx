@@ -56,8 +56,8 @@ export default function HomePage() {
     <div className="p-6 max-w-5xl mx-auto space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold font-display text-foreground">Welcome back, Sarah 👋</h1>
-          <p className="text-sm text-muted-foreground mt-1.5">Here's what's happening with your events.</p>
+          <h1 className="text-2xl font-semibold text-foreground">Welcome back, Sarah</h1>
+          <p className="text-sm text-muted-foreground mt-1">Here's what's happening with your events.</p>
         </div>
         <div className="flex gap-2">
           <Link to="/events/import">
@@ -71,18 +71,18 @@ export default function HomePage() {
 
       {needsReview.length > 0 && (
         <section>
-          <h2 className="section-title mb-3">Needs Your Attention</h2>
+          <h2 className="section-title mb-3">Needs Review</h2>
           <div className="space-y-2">
             {needsReview.map(event => (
               <Link key={event.id} to={`/events/${event.id}`}>
                 <div className="card-elevated flex items-center justify-between group cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-lg bg-warning/10 flex items-center justify-center">
                       <AlertTriangle className="h-4 w-4 text-warning" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{event.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-sm font-medium text-foreground">{event.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {event.conflicts > 0 && `${event.conflicts} conflicts`}
                         {event.conflicts > 0 && event.missingInfo > 0 && ' · '}
                         {event.missingInfo > 0 && `${event.missingInfo} missing details`}
@@ -109,11 +109,9 @@ export default function HomePage() {
               <Link key={event.id} to={`/events/${event.id}`}>
                 <div className="card-elevated group cursor-pointer">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Calendar className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="text-sm font-semibold text-foreground">{event.name}</span>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium text-foreground">{event.name}</span>
                     </div>
                     <span className={`status-badge ${event.status === 'published' ? 'status-badge-success' : 'status-badge-neutral'}`}>
                       {event.status === 'published' ? <CheckCircle2 className="h-3 w-3" /> : null}
