@@ -7,6 +7,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { mockEvents, mockSources, mockTasks, mockTimeline, mockConflicts, mockTeam } from "@/lib/mock-data";
 import ConflictDrawer from "@/components/ConflictDrawer";
+import { NotionLogo } from "@/components/icons/NotionLogo";
+import { GoogleDocsLogo } from "@/components/icons/GoogleDocsLogo";
 
 export default function EventDashboard() {
   const { id } = useParams();
@@ -141,7 +143,7 @@ export default function EventDashboard() {
                     source.type === 'google_doc' ? 'bg-blue-50 text-blue-600' :
                     'bg-red-50 text-red-600'
                   }`}>
-                    {source.type === 'notion' ? 'N' : source.type === 'google_doc' ? 'G' : 'P'}
+                    {source.type === 'notion' ? <NotionLogo className="h-4 w-4" /> : source.type === 'google_doc' ? <GoogleDocsLogo className="h-4 w-4" /> : 'P'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground truncate">{source.name}</p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Plus, X, Zap } from "lucide-react";
+import { ArrowRight, Plus, X, Zap, Users, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -12,12 +12,58 @@ interface TeamMemberInput {
 
 export default function OrgSetup() {
   const navigate = useNavigate();
+  const [step, setStep] = useState<"role" | "org" | null>("role");
   const [members, setMembers] = useState<TeamMemberInput[]>([
     { name: '', role: '', availability: '' }
   ]);
 
   const addMember = () => setMembers(prev => [...prev, { name: '', role: '', availability: '' }]);
   const removeMember = (i: number) => setMembers(prev => prev.filter((_, idx) => idx !== i));
+
+  if (step === "role") {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-md space-y-8 animate-fade-in">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+              <Zap className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-semibold">Syncra</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold">How will you use Syncra?</h1>
+            <p className="text-sm text-muted-foreground mt-1">This helps us tailor your experience.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => setStep("org")}
+              className="card-elevated text-left flex flex-col items-center gap-3 py-8 hover:ring-2 hover:ring-primary transition-all"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Users className="h-7 w-7 text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Event Organizer</p>
+                <p className="text-xs text-muted-foreground mt-1">I plan and manage events</p>
+              </div>
+            </button>
+            <button
+              onClick={() => navigate("/volunteer-setup")}
+              className="card-elevated text-left flex flex-col items-center gap-3 py-8 hover:ring-2 hover:ring-primary transition-all"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Hand className="h-7 w-7 text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Volunteer</p>
+                <p className="text-xs text-muted-foreground mt-1">I help out at events</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">

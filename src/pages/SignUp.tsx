@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { GoogleLogo } from "@/components/icons/GoogleLogo";
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
 
   return (
     <div className="min-h-screen flex">
@@ -41,6 +41,19 @@ export default function SignUp() {
           <div>
             <h1 className="text-2xl font-semibold">Create your account</h1>
             <p className="text-sm text-muted-foreground mt-1">Get your team on the same page in minutes.</p>
+          </div>
+
+          {/* Google Sign Up */}
+          <Button variant="outline" className="w-full gap-2.5 h-11">
+            <GoogleLogo className="h-4 w-4" />
+            Continue with Google
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           <div className="space-y-3">

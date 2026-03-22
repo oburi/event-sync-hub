@@ -1,4 +1,4 @@
-import { Home, Calendar, FolderOpen, Users, Settings, Zap } from "lucide-react";
+import { Home, Calendar, Users, Settings, CalendarDays, Zap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -16,7 +16,7 @@ import {
 const navItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Events", url: "/events", icon: Calendar },
-  { title: "Sources", url: "/sources", icon: FolderOpen },
+  { title: "Calendar", url: "/calendar", icon: CalendarDays },
   { title: "Team", url: "/team", icon: Users },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
