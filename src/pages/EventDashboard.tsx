@@ -194,7 +194,7 @@ export default function EventDashboard() {
           </div>
           <h1 className="text-2xl font-semibold">{event.name}</h1>
           <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+            <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{formatLocalDate(event.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{event.time}</span>
             <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{event.location}</span>
           </div>

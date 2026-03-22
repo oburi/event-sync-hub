@@ -112,7 +112,7 @@ export default function VolunteerView() {
         </div>
         <h1 className="text-xl font-semibold text-primary-foreground">{event.name}</h1>
         <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-primary-foreground/70">
-          <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
+          <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatLocalDate(event.date, { weekday: "short", month: "short", day: "numeric" })}</span>
           <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.time}</span>
           <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{event.location}</span>
         </div>

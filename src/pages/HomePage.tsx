@@ -120,7 +120,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {formatLocalDate(event.date, { month: 'short', day: 'numeric' })}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
