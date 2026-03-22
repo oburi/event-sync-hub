@@ -180,6 +180,31 @@ export default function EventDashboard() {
           </div>
         </div>
         <div className="flex gap-2">
+          {isImported && event.status === 'draft' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={publishing}
+              onClick={async () => {
+                setPublishing(true);
+                const { error } = await supabase
+                  .from('events')
+                  .update({ status: 'published' })
+                  .eq('id', id!);
+                setPublishing(false);
+                if (error) {
+                  toast.error("Failed to publish: " + error.message);
+                } else {
+                  toast.success("Event published!");
+                  setDbEvent(prev => prev ? { ...prev, status: 'published' } : prev);
+                }
+              }}
+            >
+              {publishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+              Publish
+            </Button>
+          )}
           <Link to={`/events/${event.id}/volunteer-editor`}>
             <Button variant="outline" size="sm" className="gap-1.5">
               <Eye className="h-3.5 w-3.5" />
