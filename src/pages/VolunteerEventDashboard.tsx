@@ -209,17 +209,38 @@ export default function VolunteerEventDashboard() {
   const { eventId } = useParams();
   const [filter, setFilter] = useState<Filter>("all");
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  const toggleComplete = (taskId: string) => {
+    setCompletedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  };
+
+  const getEffectiveStatus = (task: VolunteerTask): TaskStatus =>
+    completedIds.has(task.id) ? "completed" : task.status;
 
   const filteredTasks = mockTasks.filter((t) => {
+    const effective = getEffectiveStatus(t);
     if (filter === "all") return true;
     if (filter === "today") return t.date === "April 5";
-    if (filter === "upcoming") return t.status === "upcoming";
-    if (filter === "completed") return t.status === "completed";
+    if (filter === "upcoming") return effective === "upcoming";
+    if (filter === "completed") return effective === "completed";
     return true;
   });
 
-  const preEventTasks = filteredTasks.filter((t) => t.isPreEvent);
-  const dayOfTasks = filteredTasks.filter((t) => !t.isPreEvent);
+  // Sort: completed tasks sink to the bottom
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    const aDone = completedIds.has(a.id) ? 1 : 0;
+    const bDone = completedIds.has(b.id) ? 1 : 0;
+    return aDone - bDone;
+  });
+
+  const preEventTasks = sortedTasks.filter((t) => t.isPreEvent);
+  const dayOfTasks = sortedTasks.filter((t) => !t.isPreEvent);
 
   return (
     <div className="min-h-screen bg-background">
@@ -336,9 +357,11 @@ export default function VolunteerEventDashboard() {
                     key={task.id}
                     task={task}
                     expanded={expandedTask === task.id}
+                    isCompleted={completedIds.has(task.id)}
                     onToggle={() =>
                       setExpandedTask(expandedTask === task.id ? null : task.id)
                     }
+                    onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
               </div>
