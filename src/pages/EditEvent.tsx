@@ -11,6 +11,7 @@ interface TaskItem {
   title: string;
   description: string;
   assignedRole: string;
+  assignedVolunteer: string;
   time: string;
   location: string;
 }
