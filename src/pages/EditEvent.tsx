@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, Loader2, Plus, Trash2, Clock, MapPin, Users } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Plus, Trash2, Clock, MapPin, Users, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { mockTeam } from "@/lib/mock-data";
 
 interface TaskItem {
   title: string;
@@ -14,6 +16,11 @@ interface TaskItem {
   assignedVolunteer: string;
   time: string;
   location: string;
+}
+
+interface Suggestion {
+  name: string;
+  reason: string;
 }
 
 export default function EditEvent() {
@@ -29,6 +36,9 @@ export default function EditEvent() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("draft");
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+
+  const [suggestions, setSuggestions] = useState<Record<number, Suggestion[]>>({});
+  const [suggestingFor, setSuggestingFor] = useState<number | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -73,10 +83,84 @@ export default function EditEvent() {
 
   const updateTask = (index: number, field: keyof TaskItem, value: string) => {
     setTasks((prev) => prev.map((t, i) => (i === index ? { ...t, [field]: value } : t)));
+    // Clear suggestions when volunteer is manually edited
+    if (field === "assignedVolunteer") {
+      setSuggestions((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+    }
   };
 
   const removeTask = (index: number) => {
     setTasks((prev) => prev.filter((_, i) => i !== index));
+    setSuggestions((prev) => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
+  };
+
+  const handleSuggest = async (taskIndex: number) => {
+    setSuggestingFor(taskIndex);
+    try {
+      // Build workload from current event tasks
+      const workload: Record<string, number> = {};
+      mockTeam.forEach((m) => (workload[m.name] = 0));
+      tasks.forEach((t) => {
+        if (t.assignedVolunteer && workload[t.assignedVolunteer] !== undefined) {
+          workload[t.assignedVolunteer]++;
+        }
+      });
+
+      // Also count from other events
+      const { data: allEvents } = await supabase
+        .from("events")
+        .select("id, raw_content")
+        .neq("id", id!);
+
+      (allEvents || []).forEach((evt) => {
+        if (!evt.raw_content) return;
+        try {
+          const parsed = JSON.parse(evt.raw_content);
+          (parsed.tasks || []).forEach((t: any) => {
+            if (t.assignedVolunteer && workload[t.assignedVolunteer] !== undefined) {
+              workload[t.assignedVolunteer]++;
+            }
+          });
+        } catch {}
+      });
+
+      const task = tasks[taskIndex];
+      const { data, error } = await supabase.functions.invoke("suggest-volunteer", {
+        body: {
+          task: { title: task.title, description: task.description, assignedRole: task.assignedRole, time: task.time },
+          team: mockTeam.map((m) => ({ name: m.name, role: m.role, availability: m.availability })),
+          workload,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+      } else if (data?.suggestions) {
+        setSuggestions((prev) => ({ ...prev, [taskIndex]: data.suggestions }));
+      }
+    } catch (e: any) {
+      toast.error("Failed to get suggestions: " + (e.message || "Unknown error"));
+    } finally {
+      setSuggestingFor(null);
+    }
+  };
+
+  const acceptSuggestion = (taskIndex: number, volunteerName: string) => {
+    updateTask(taskIndex, "assignedVolunteer", volunteerName);
+    setSuggestions((prev) => {
+      const next = { ...prev };
+      delete next[taskIndex];
+      return next;
+    });
   };
 
   const handleSave = async () => {
@@ -228,14 +312,45 @@ export default function EditEvent() {
                       className="text-sm"
                     />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Users className="h-3.5 w-3.5 text-primary shrink-0" />
-                    <Input
-                      value={task.assignedVolunteer}
-                      onChange={(e) => updateTask(i, "assignedVolunteer", e.target.value)}
-                      placeholder="Volunteer name"
-                      className="text-sm"
-                    />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <Input
+                        value={task.assignedVolunteer}
+                        onChange={(e) => updateTask(i, "assignedVolunteer", e.target.value)}
+                        placeholder="Volunteer name"
+                        className="text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 shrink-0"
+                        onClick={() => handleSuggest(i)}
+                        disabled={suggestingFor === i}
+                        title="AI Suggest"
+                      >
+                        {suggestingFor === i ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    {suggestions[i] && (
+                      <div className="flex flex-wrap gap-1.5 pl-5">
+                        {suggestions[i].map((s, si) => (
+                          <Badge
+                            key={si}
+                            variant="secondary"
+                            className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-xs"
+                            onClick={() => acceptSuggestion(i, s.name)}
+                            title={s.reason}
+                          >
+                            {s.name} — <span className="font-normal opacity-75">{s.reason}</span>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
