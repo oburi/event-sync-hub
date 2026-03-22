@@ -276,7 +276,7 @@ export default function EventImport() {
                 }`}
               >
                 <div className={`h-10 w-10 rounded-lg ${source.color} flex items-center justify-center text-lg mb-3`}>
-                  {source.icon}
+                  {source.id === "notion" ? <SlackLogo className="h-5 w-5" /> : source.icon}
                 </div>
                 <p className="text-sm font-medium text-foreground">{source.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{source.desc}</p>
