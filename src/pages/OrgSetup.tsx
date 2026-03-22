@@ -24,39 +24,39 @@ export default function OrgSetup() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="w-full max-w-md space-y-8 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold">Syncra</span>
+            <span className="text-lg font-semibold tracking-tight">Syncra</span>
           </div>
           <div>
-            <h1 className="text-2xl font-semibold">How will you use Syncra?</h1>
-            <p className="text-sm text-muted-foreground mt-1">This helps us tailor your experience.</p>
+            <h1 className="font-serif text-3xl text-foreground">How will you use Syncra?</h1>
+            <p className="text-[14px] text-muted-foreground mt-1.5">This helps us tailor your experience.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setStep("org")}
-              className="card-elevated text-left flex flex-col items-center gap-3 py-8 hover:ring-2 hover:ring-primary transition-all"
+              className="card-elevated text-left flex flex-col items-center gap-4 py-10 hover:ring-2 hover:ring-primary transition-all"
             >
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Users className="h-7 w-7 text-primary" />
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Users className="h-8 w-8 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">Event Organizer</p>
-                <p className="text-xs text-muted-foreground mt-1">I plan and manage events</p>
+                <p className="text-[15px] font-semibold text-foreground">Event Organizer</p>
+                <p className="text-[13px] text-muted-foreground mt-1">I plan and manage events</p>
               </div>
             </button>
             <button
               onClick={() => navigate("/volunteer-setup")}
-              className="card-elevated text-left flex flex-col items-center gap-3 py-8 hover:ring-2 hover:ring-primary transition-all"
+              className="card-elevated text-left flex flex-col items-center gap-4 py-10 hover:ring-2 hover:ring-primary transition-all"
             >
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Hand className="h-7 w-7 text-primary" />
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Hand className="h-8 w-8 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">Volunteer</p>
-                <p className="text-xs text-muted-foreground mt-1">I help out at events</p>
+                <p className="text-[15px] font-semibold text-foreground">Volunteer</p>
+                <p className="text-[13px] text-muted-foreground mt-1">I help out at events</p>
               </div>
             </button>
           </div>
@@ -68,60 +68,60 @@ export default function OrgSetup() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="w-full max-w-lg space-y-8 animate-fade-in">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
             <Zap className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg font-semibold">Syncra</span>
+          <span className="text-lg font-semibold tracking-tight">Syncra</span>
         </div>
 
         <div>
-          <h1 className="text-2xl font-semibold">Set up your organization</h1>
-          <p className="text-sm text-muted-foreground mt-1">Tell us about your club or group.</p>
+          <h1 className="font-serif text-3xl text-foreground">Set up your organization</h1>
+          <p className="text-[14px] text-muted-foreground mt-1.5">Tell us about your club or group.</p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Organization / Club Name</label>
-            <Input placeholder="CS Student Association" className="mt-1" />
+            <label className="text-[14px] font-medium">Organization / Club Name</label>
+            <Input placeholder="CS Student Association" className="mt-1.5 rounded-xl h-10" />
           </div>
           <div>
-            <label className="text-sm font-medium">School or Community</label>
-            <Input placeholder="University of California" className="mt-1" />
+            <label className="text-[14px] font-medium">School or Community</label>
+            <Input placeholder="University of California" className="mt-1.5 rounded-xl h-10" />
           </div>
           <div>
-            <label className="text-sm font-medium">Short Description</label>
-            <Input placeholder="We organize tech events for students..." className="mt-1" />
+            <label className="text-[14px] font-medium">Short Description</label>
+            <Input placeholder="We organize tech events for students..." className="mt-1.5 rounded-xl h-10" />
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium">Team Members</label>
-            <Button variant="ghost" size="sm" onClick={addMember} className="text-xs gap-1">
+            <label className="text-[14px] font-medium">Team Members</label>
+            <Button variant="ghost" size="sm" onClick={addMember} className="text-[13px] gap-1 rounded-xl">
               <Plus className="h-3 w-3" /> Add member
             </Button>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {members.map((member, i) => (
               <div key={i} className="flex items-center gap-2">
-                <Input placeholder="Name" className="flex-1" value={member.name} onChange={e => {
+                <Input placeholder="Name" className="flex-1 rounded-xl h-10" value={member.name} onChange={e => {
                   const updated = [...members];
                   updated[i].name = e.target.value;
                   setMembers(updated);
                 }} />
-                <Input placeholder="Role" className="w-28" value={member.role} onChange={e => {
+                <Input placeholder="Role" className="w-28 rounded-xl h-10" value={member.role} onChange={e => {
                   const updated = [...members];
                   updated[i].role = e.target.value;
                   setMembers(updated);
                 }} />
-                <Input placeholder="Availability" className="w-28" value={member.availability} onChange={e => {
+                <Input placeholder="Availability" className="w-28 rounded-xl h-10" value={member.availability} onChange={e => {
                   const updated = [...members];
                   updated[i].availability = e.target.value;
                   setMembers(updated);
                 }} />
                 {members.length > 1 && (
-                  <button onClick={() => removeMember(i)} className="p-1 rounded hover:bg-muted">
+                  <button onClick={() => removeMember(i)} className="p-1.5 rounded-lg hover:bg-muted">
                     <X className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 )}
@@ -130,7 +130,7 @@ export default function OrgSetup() {
           </div>
         </div>
 
-        <Button onClick={() => navigate('/')} className="w-full gap-1.5">
+        <Button onClick={() => navigate('/')} className="w-full gap-1.5 rounded-xl h-11">
           Finish Setup
           <ArrowRight className="h-4 w-4" />
         </Button>

@@ -91,20 +91,20 @@ export default function CalendarPage() {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-5 sm:p-8 max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Calendar</h1>
+        <h1 className="font-serif text-3xl text-foreground">Calendar</h1>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-lg border overflow-hidden">
+          <div className="flex rounded-xl border overflow-hidden">
             <button
               onClick={() => setView("weekly")}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${view === "weekly" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+              className={`px-3 py-1.5 text-[12px] font-medium transition-colors ${view === "weekly" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
             >
               Weekly
             </button>
             <button
               onClick={() => setView("monthly")}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${view === "monthly" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+              className={`px-3 py-1.5 text-[12px] font-medium transition-colors ${view === "monthly" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
             >
               Monthly
             </button>
@@ -113,28 +113,28 @@ export default function CalendarPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => view === "weekly" ? navigateWeek(-1) : navigateMonth(-1)}>
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-xl" onClick={() => view === "weekly" ? navigateWeek(-1) : navigateMonth(-1)}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium text-foreground min-w-[160px] text-center">
+        <span className="text-[14px] font-medium text-foreground min-w-[160px] text-center">
           {view === "weekly"
             ? `${weekDays[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${weekDays[6].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
             : currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })
           }
         </span>
-        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => view === "weekly" ? navigateWeek(1) : navigateMonth(1)}>
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-xl" onClick={() => view === "weekly" ? navigateWeek(1) : navigateMonth(1)}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
 
       {view === "weekly" ? (
-        <div className="border rounded-xl overflow-hidden bg-card">
+        <div className="border rounded-2xl overflow-hidden bg-card">
           <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b">
             <div className="p-2" />
             {weekDays.map((day, i) => (
               <div key={i} className="p-2 text-center border-l">
                 <p className="text-[10px] text-muted-foreground uppercase">{dayNames[day.getDay()]}</p>
-                <p className={`text-sm font-medium ${day.toDateString() === new Date().toDateString() ? "text-primary" : "text-foreground"}`}>
+                <p className={`text-[14px] font-medium ${day.toDateString() === new Date().toDateString() ? "text-primary" : "text-foreground"}`}>
                   {day.getDate()}
                 </p>
               </div>
@@ -160,7 +160,7 @@ export default function CalendarPage() {
                     <div key={i} className="border-l border-t p-0.5">
                       {hourEvents.map(ev => (
                         <Link key={ev.id} to={`/events/${ev.id}`}>
-                          <div className="rounded bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 font-medium truncate hover:bg-primary/20 transition-colors">
+                          <div className="rounded-lg bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 font-medium truncate hover:bg-primary/20 transition-colors">
                             {ev.name}
                           </div>
                         </Link>
@@ -173,10 +173,10 @@ export default function CalendarPage() {
           </div>
         </div>
       ) : (
-        <div className="border rounded-xl overflow-hidden bg-card">
+        <div className="border rounded-2xl overflow-hidden bg-card">
           <div className="grid grid-cols-7 border-b">
             {dayNames.map(name => (
-              <div key={name} className="p-2 text-center text-[10px] font-medium text-muted-foreground uppercase">
+              <div key={name} className="p-2.5 text-center text-[11px] font-medium text-muted-foreground uppercase">
                 {name}
               </div>
             ))}
@@ -188,7 +188,7 @@ export default function CalendarPage() {
               const events = getEventsForDate(day);
               return (
                 <div key={i} className={`min-h-[80px] p-1.5 border-t ${i % 7 !== 0 ? 'border-l' : ''} ${!isCurrentMonth ? 'bg-muted/30' : ''}`}>
-                  <span className={`text-xs font-medium inline-flex h-6 w-6 items-center justify-center rounded-full ${
+                  <span className={`text-[13px] font-medium inline-flex h-7 w-7 items-center justify-center rounded-full ${
                     isToday ? 'bg-primary text-primary-foreground' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
                   }`}>
                     {day.getDate()}
@@ -196,7 +196,7 @@ export default function CalendarPage() {
                   <div className="mt-0.5 space-y-0.5">
                     {events.map(ev => (
                       <Link key={ev.id} to={`/events/${ev.id}`}>
-                        <div className={`rounded px-1.5 py-0.5 text-[10px] font-medium truncate hover:opacity-80 transition-opacity ${
+                        <div className={`rounded-lg px-1.5 py-0.5 text-[10px] font-medium truncate hover:opacity-80 transition-opacity ${
                           ev.status === 'published' ? 'bg-primary/10 text-primary' :
                           ev.status === 'completed' ? 'bg-muted text-muted-foreground' :
                           'bg-warning/10 text-warning'
