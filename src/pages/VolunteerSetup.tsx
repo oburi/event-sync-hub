@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Zap, Calendar, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { GoogleLogo } from "@/components/icons/GoogleLogo";
 
 export default function VolunteerSetup() {
   const navigate = useNavigate();
+  const [calendarState, setCalendarState] = useState<"idle" | "connecting" | "connected">("idle");
+
+  const handleGoogleCalendarSync = () => {
+    setCalendarState("connecting");
+    // Simulate OAuth flow
+    setTimeout(() => setCalendarState("connected"), 1500);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
@@ -33,11 +41,27 @@ export default function VolunteerSetup() {
           </div>
           <div>
             <label className="text-sm font-medium text-foreground">Availability</label>
-            <Input placeholder="Full day, mornings only, etc." className="mt-1" />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground">T-Shirt Size</label>
-            <Input placeholder="S, M, L, XL" className="mt-1" />
+            {calendarState === "connected" ? (
+              <div className="mt-1 flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2.5 text-sm">
+                <Check className="h-4 w-4 text-green-600 shrink-0" />
+                <span className="text-foreground">Connected: Google Calendar — availability synced</span>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-1 w-full gap-2 justify-center"
+                disabled={calendarState === "connecting"}
+                onClick={handleGoogleCalendarSync}
+              >
+                {calendarState === "connecting" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <GoogleLogo className="h-4 w-4" />
+                )}
+                {calendarState === "connecting" ? "Connecting…" : "Sync with Google Calendar"}
+              </Button>
+            )}
           </div>
         </div>
 
