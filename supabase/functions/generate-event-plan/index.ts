@@ -48,9 +48,12 @@ serve(async (req) => {
       });
     }
 
-    const userContent = pdfBase64
-      ? `Extract event details from this PDF document (base64 encoded). The PDF content in base64: ${pdfBase64.substring(0, 50000)}`
-      : `Extract event details from the following document text:\n\n${text}`;
+    const contentParts = pdfBase64
+      ? [
+          { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+          { text: "Extract event details from this PDF document." },
+        ]
+      : [{ text: `Extract event details from the following document text:\n\n${text}` }];
 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -59,7 +62,7 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ parts: [{ text: userContent }] }],
+        contents: [{ parts: contentParts }],
         generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
       }),
     });
