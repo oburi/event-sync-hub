@@ -279,7 +279,7 @@ export default function EventImport() {
                 }`}
               >
                 <div className={`h-10 w-10 rounded-lg ${source.color} flex items-center justify-center text-lg mb-3`}>
-                  {source.id === "notion" ? <NotionLogo className="h-5 w-5" /> : source.id === "google_doc" ? <GoogleDocsLogo className="h-5 w-5" /> : source.id === "slack" ? <MessageSquare className="h-5 w-5 text-purple-600" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
+                  {source.id === "notion" ? <NotionLogo className="h-5 w-5" /> : source.id === "google_doc" ? <GoogleDocsLogo className="h-5 w-5" /> : source.id === "slack" ? <SlackLogo className="h-5 w-5" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
                 </div>
                 <p className="text-sm font-medium text-foreground">{source.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{source.desc}</p>
