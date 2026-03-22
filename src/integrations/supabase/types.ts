@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          created_at: string
+          date: string | null
+          description: string | null
+          id: string
+          location: string | null
+          name: string
+          raw_content: string | null
+          source_type: string | null
+          source_url: string | null
+          status: string
+          time: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          raw_content?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          status?: string
+          time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          raw_content?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          status?: string
+          time?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       google_tokens: {
         Row: {
           access_token: string

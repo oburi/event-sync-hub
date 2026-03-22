@@ -1,19 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Calendar, Clock, MapPin, Users, AlertTriangle, FileText,
-  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info
+  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { mockEvents, mockSources, mockTasks, mockTimeline, mockConflicts, mockTeam } from "@/lib/mock-data";
 import ConflictDrawer from "@/components/ConflictDrawer";
 import { NotionLogo } from "@/components/icons/NotionLogo";
 import { GoogleDocsLogo } from "@/components/icons/GoogleDocsLogo";
+import type { Event } from "@/lib/mock-data";
+
+// Check if an ID looks like a UUID (real DB record)
+const isUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
 export default function EventDashboard() {
   const { id } = useParams();
-  const event = mockEvents.find(e => e.id === id) || mockEvents[0];
   const [showConflicts, setShowConflicts] = useState(false);
+  const [dbEvent, setDbEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (id && isUUID(id)) {
+      setLoading(true);
+      supabase
+        .from('events')
+        .select('*')
+        .eq('id', id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setDbEvent({
+              id: data.id,
+              name: data.name,
+              date: data.date || new Date().toISOString().split('T')[0],
+              time: data.time || 'TBD',
+              location: data.location || 'TBD',
+              description: data.description || '',
+              status: (data.status as Event['status']) || 'draft',
+              lastUpdated: new Date(data.updated_at).toLocaleDateString(),
+              conflicts: 0,
+              missingInfo: 0,
+              volunteersCount: 0,
+            });
+          }
+          setLoading(false);
+        });
+    }
+  }, [id]);
+
+  const event = dbEvent || mockEvents.find(e => e.id === id) || mockEvents[0];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6 animate-fade-in">

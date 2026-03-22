@@ -110,11 +110,24 @@ export default function EventImport() {
       setState('processing');
       setFetchedContent(data.content);
 
-      // Step 3: Simulate AI processing
-      await new Promise(r => setTimeout(r, 2000));
+      // Step 3: Create event in database
+      const { data: newEvent, error: insertError } = await supabase
+        .from('events')
+        .insert({
+          name: data.title || 'Imported Event',
+          description: (data.content || '').slice(0, 500),
+          raw_content: data.content,
+          source_type: 'google_doc',
+          source_url: url,
+          status: 'draft',
+        })
+        .select('id')
+        .single();
+
+      if (insertError) throw new Error(insertError.message);
 
       setState('done');
-      setTimeout(() => navigate('/events'), 1500);
+      setTimeout(() => navigate(`/events/${newEvent.id}`), 1500);
     } catch (err: any) {
       setState('idle');
       setError(err.message || 'Failed to import document');
