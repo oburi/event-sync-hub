@@ -97,7 +97,7 @@ export default function EventImport() {
 
       // Step 2: Fetch document
       const { data, error: fnError } = await supabase.functions.invoke("fetch-google-doc", {
-        body: { sessionId: "default", documentId },
+        body: { sessionId: getSessionId(), documentId },
       });
 
       if (fnError || data?.error) {
