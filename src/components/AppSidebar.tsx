@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, Settings, CalendarDays, Zap } from "lucide-react";
+import { Home, Calendar, Users, CalendarDays, Zap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -18,7 +18,6 @@ const navItems = [
   { title: "Events", url: "/events", icon: Calendar },
   { title: "Calendar", url: "/calendar", icon: CalendarDays },
   { title: "Team", url: "/team", icon: Users },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {

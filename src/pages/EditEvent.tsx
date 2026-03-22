@@ -11,6 +11,7 @@ interface TaskItem {
   title: string;
   description: string;
   assignedRole: string;
+  assignedVolunteer: string;
   time: string;
   location: string;
 }
@@ -53,6 +54,7 @@ export default function EditEvent() {
                     title: t.title || "",
                     description: t.description || "",
                     assignedRole: t.assignedRole || "",
+                    assignedVolunteer: t.assignedVolunteer || "",
                     time: t.time || "",
                     location: t.location || "",
                   }))
@@ -66,7 +68,7 @@ export default function EditEvent() {
   }, [id]);
 
   const addTask = () => {
-    setTasks((prev) => [...prev, { title: "", description: "", assignedRole: "", time: "", location: "" }]);
+    setTasks((prev) => [...prev, { title: "", description: "", assignedRole: "", assignedVolunteer: "", time: "", location: "" }]);
   };
 
   const updateTask = (index: number, field: keyof TaskItem, value: string) => {
@@ -89,6 +91,7 @@ export default function EditEvent() {
         title: t.title,
         description: t.description,
         assignedRole: t.assignedRole || null,
+        assignedVolunteer: t.assignedVolunteer || null,
         time: t.time || null,
         location: t.location || null,
       })),
@@ -215,13 +218,22 @@ export default function EditEvent() {
                   placeholder="Description"
                   rows={2}
                 />
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                     <Input
                       value={task.assignedRole}
                       onChange={(e) => updateTask(i, "assignedRole", e.target.value)}
-                      placeholder="Assigned role"
+                      placeholder="Role (e.g. Coordinator)"
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <Input
+                      value={task.assignedVolunteer}
+                      onChange={(e) => updateTask(i, "assignedVolunteer", e.target.value)}
+                      placeholder="Volunteer name"
                       className="text-sm"
                     />
                   </div>
