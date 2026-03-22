@@ -382,9 +382,11 @@ export default function VolunteerEventDashboard() {
                     key={task.id}
                     task={task}
                     expanded={expandedTask === task.id}
+                    isCompleted={completedIds.has(task.id)}
                     onToggle={() =>
                       setExpandedTask(expandedTask === task.id ? null : task.id)
                     }
+                    onToggleComplete={() => toggleComplete(task.id)}
                   />
                 ))}
               </div>
