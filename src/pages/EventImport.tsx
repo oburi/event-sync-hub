@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Upload, FileText, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn } from "lucide-react";
+import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,6 +29,32 @@ const sources = [
   { id: "pdf" as const, name: "PDF Upload", icon: "📎", desc: "Upload a PDF document", color: "bg-red-50" },
 ];
 
+async function callGenerateEventPlan(payload: { text?: string; pdfBase64?: string }) {
+  const { data, error } = await supabase.functions.invoke("generate-event-plan", { body: payload });
+  if (error || data?.error) throw new Error(data?.error || error?.message || "AI processing failed");
+  return data.plan;
+}
+
+async function createEventFromPlan(plan: any, sourceType: string, sourceUrl?: string) {
+  const { data: newEvent, error } = await supabase
+    .from("events")
+    .insert({
+      name: plan.title || "Imported Event",
+      description: plan.description || "",
+      date: plan.date || null,
+      time: plan.time || null,
+      location: plan.location || null,
+      raw_content: JSON.stringify(plan),
+      source_type: sourceType,
+      source_url: sourceUrl || null,
+      status: "draft",
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return newEvent.id;
+}
+
 export default function EventImport() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -36,15 +62,14 @@ export default function EventImport() {
   const [state, setState] = useState<ImportState>("idle");
   const [url, setUrl] = useState("");
   const [googleConnected, setGoogleConnected] = useState(false);
-  const [fetchedContent, setFetchedContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if returning from Google OAuth
   useEffect(() => {
     if (searchParams.get("google_connected") === "true") {
       setGoogleConnected(true);
       setSelected("google_doc");
-      // Clean the query param from the URL
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [searchParams]);
@@ -72,12 +97,10 @@ export default function EventImport() {
     const { data, error: fnError } = await supabase.functions.invoke("google-auth", {
       body: { sessionId },
     });
-
     if (fnError || data?.error) {
       setError(data?.error || fnError?.message || "Failed to start Google auth");
       return;
     }
-
     window.location.href = data.url;
   };
 
@@ -91,11 +114,9 @@ export default function EventImport() {
 
     setState("connecting");
     try {
-      // Step 1: Connecting
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 400));
       setState("importing");
 
-      // Step 2: Fetch document
       const { data, error: fnError } = await supabase.functions.invoke("fetch-google-doc", {
         body: { sessionId: getSessionId(), documentId },
       });
@@ -111,29 +132,59 @@ export default function EventImport() {
       }
 
       setState("processing");
-      setFetchedContent(data.content);
-
-      // Step 3: Create event in database
-      const { data: newEvent, error: insertError } = await supabase
-        .from("events")
-        .insert({
-          name: data.title || "Imported Event",
-          description: (data.content || "").slice(0, 500),
-          raw_content: data.content,
-          source_type: "google_doc",
-          source_url: url,
-          status: "draft",
-        })
-        .select("id")
-        .single();
-
-      if (insertError) throw new Error(insertError.message);
+      const plan = await callGenerateEventPlan({ text: data.content });
+      const eventId = await createEventFromPlan(plan, "google_doc", url);
 
       setState("done");
-      setTimeout(() => navigate(`/events/${newEvent.id}`), 1500);
+      setTimeout(() => navigate(`/events/${eventId}`), 1200);
     } catch (err: any) {
       setState("idle");
       setError(err.message || "Failed to import document");
+    }
+  };
+
+  const handlePdfImport = async () => {
+    if (!pdfFile) return;
+    setError(null);
+
+    if (pdfFile.size > 10 * 1024 * 1024) {
+      setError("File too large. Maximum size is 10MB.");
+      return;
+    }
+
+    setState("connecting");
+    try {
+      await new Promise((r) => setTimeout(r, 300));
+      setState("importing");
+
+      // Read file as base64
+      const buffer = await pdfFile.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const pdfBase64 = btoa(binary);
+
+      setState("processing");
+      const plan = await callGenerateEventPlan({ pdfBase64 });
+      const eventId = await createEventFromPlan(plan, "pdf");
+
+      setState("done");
+      setTimeout(() => navigate(`/events/${eventId}`), 1200);
+    } catch (err: any) {
+      setState("idle");
+      setError(err.message || "Failed to import PDF");
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === "application/pdf") {
+      setPdfFile(file);
+      setError(null);
+    } else if (file) {
+      setError("Please select a PDF file.");
     }
   };
 
@@ -142,7 +193,11 @@ export default function EventImport() {
       handleGoogleDocImport();
       return;
     }
-    // Simulated flow for notion/pdf
+    if (selected === "pdf") {
+      handlePdfImport();
+      return;
+    }
+    // Simulated flow for notion
     setState("connecting");
     setTimeout(() => setState("importing"), 1200);
     setTimeout(() => setState("processing"), 2800);
@@ -150,6 +205,18 @@ export default function EventImport() {
       setState("done");
       setTimeout(() => navigate("/events"), 1500);
     }, 4500);
+  };
+
+  const statusLabel = {
+    connecting: selected === "pdf" ? "Reading PDF…" : "Connecting to source…",
+    importing: selected === "pdf" ? "Uploading document…" : "Fetching document content…",
+    processing: "AI is extracting event details…",
+  };
+
+  const statusSub = {
+    connecting: "Preparing upload",
+    importing: selected === "pdf" ? "Sending to AI for analysis" : "Reading and parsing content",
+    processing: "Generating timeline, tasks, and assignments",
   };
 
   return (
@@ -176,6 +243,7 @@ export default function EventImport() {
                 onClick={() => {
                   setSelected(source.id);
                   setError(null);
+                  setPdfFile(null);
                 }}
                 className={`card-elevated text-left transition-all ${
                   selected === source.id ? "ring-2 ring-primary shadow-md" : ""
@@ -190,6 +258,7 @@ export default function EventImport() {
             ))}
           </div>
 
+          {/* Google Docs - not connected */}
           {selected === "google_doc" && !googleConnected && (
             <div className="space-y-3 animate-fade-in">
               <div className="rounded-lg border border-border bg-muted/30 p-6 text-center">
@@ -206,6 +275,7 @@ export default function EventImport() {
             </div>
           )}
 
+          {/* Google Docs - connected */}
           {selected === "google_doc" && googleConnected && (
             <div className="space-y-3 animate-fade-in">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
@@ -232,6 +302,7 @@ export default function EventImport() {
             </div>
           )}
 
+          {/* Notion */}
           {selected === "notion" && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium text-foreground">Paste URL</label>
@@ -254,16 +325,40 @@ export default function EventImport() {
             </div>
           )}
 
+          {/* PDF Upload */}
           {selected === "pdf" && (
-            <div className="animate-fade-in">
+            <div className="animate-fade-in space-y-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
               <button
-                onClick={handleImport}
+                onClick={() => fileInputRef.current?.click()}
                 className="w-full rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/30 p-8 text-center hover:border-primary/30 hover:bg-primary/5 transition-colors"
               >
                 <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm font-medium text-foreground">Drop PDF here or click to upload</p>
-                <p className="text-xs text-muted-foreground mt-1">Max 10MB</p>
+                <p className="text-sm font-medium text-foreground">
+                  {pdfFile ? pdfFile.name : "Drop PDF here or click to upload"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {pdfFile ? `${(pdfFile.size / 1024 / 1024).toFixed(1)} MB` : "Max 10MB"}
+                </p>
               </button>
+              {pdfFile && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <FileUp className="h-3.5 w-3.5 text-green-600" />
+                    <span>Ready to import</span>
+                  </div>
+                  <Button onClick={handleImport} className="gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Import PDF
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </>
@@ -281,14 +376,10 @@ export default function EventImport() {
             <>
               <Loader2 className="h-10 w-10 mx-auto text-primary animate-spin mb-4" />
               <p className="text-sm font-medium text-foreground">
-                {state === "connecting" && "Connecting to Google Docs…"}
-                {state === "importing" && "Fetching document content…"}
-                {state === "processing" && "AI is extracting event details…"}
+                {statusLabel[state as keyof typeof statusLabel]}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {state === "connecting" && "Establishing connection"}
-                {state === "importing" && "Reading and parsing content"}
-                {state === "processing" && "Generating timeline, tasks, and volunteer assignments"}
+                {statusSub[state as keyof typeof statusSub]}
               </p>
             </>
           )}
