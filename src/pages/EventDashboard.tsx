@@ -109,6 +109,7 @@ export default function EventDashboard() {
   const [dbEvent, setDbEvent] = useState<(Event & { raw_content?: string | null; source_type?: string | null; source_url?: string | null; updated_at_raw?: string }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [isImported, setIsImported] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     if (id && isUUID(id)) {
