@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   Calendar, Clock, MapPin, Users, AlertTriangle, FileText,
-  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send
+  ExternalLink, RefreshCw, Edit3, Eye, CheckCircle2, Info, Loader2, Send, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
