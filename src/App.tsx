@@ -10,7 +10,6 @@ import HomePage from "@/pages/HomePage";
 import EventsPage from "@/pages/EventsPage";
 import EventDashboard from "@/pages/EventDashboard";
 import EventImport from "@/pages/EventImport";
-import EventImport from "@/pages/EventImport";
 import VolunteerEditor from "@/pages/VolunteerEditor";
 import VolunteerView from "@/pages/VolunteerView";
 import SignUp from "@/pages/SignUp";
