@@ -237,6 +237,29 @@ export default function EventDashboard() {
               Edit Event
             </Button>
           </Link>
+          {isImported && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+              disabled={deleting}
+              onClick={async () => {
+                if (!confirm("Are you sure you want to delete this event? This cannot be undone.")) return;
+                setDeleting(true);
+                const { error } = await supabase.from('events').delete().eq('id', id!);
+                setDeleting(false);
+                if (error) {
+                  toast.error("Failed to delete: " + error.message);
+                } else {
+                  toast.success("Event deleted");
+                  navigate('/events');
+                }
+              }}
+            >
+              {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+              Delete
+            </Button>
+          )}
         </div>
       </div>
 
