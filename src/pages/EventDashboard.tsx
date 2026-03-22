@@ -93,6 +93,18 @@ function buildSourceFromEvent(dbEvent: { source_type?: string | null; source_url
 }
 
 function buildContactsFromPlan(plan: RawPlan): TeamMember[] {
+  // Use explicitly extracted contacts if available
+  if (plan.contacts && plan.contacts.length > 0) {
+    return plan.contacts.map((c, i) => ({
+      id: `contact-${i}`,
+      name: c.name,
+      role: c.role || "Team Member",
+      email: c.email || "",
+      phone: c.phone || "",
+      availability: "Available",
+    }));
+  }
+  // Fallback: derive from task assignedRoles
   const roles = new Map<string, string>();
   for (const t of plan.tasks || []) {
     if (t.assignedRole && !roles.has(t.assignedRole)) {
