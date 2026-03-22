@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const SYSTEM_PROMPT = `You are an event planning assistant. Extract and return only valid JSON matching this schema:
@@ -25,7 +26,7 @@ const SYSTEM_PROMPT = `You are an event planning assistant. Extract and return o
 Extract as much structured information as possible from the provided text. Generate 3-8 logical tasks based on the event content. Return ONLY the JSON object, no markdown or explanation.`;
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -33,18 +34,18 @@ serve(async (req) => {
     const { text, pdfBase64 } = await req.json();
 
     if (!text && !pdfBase64) {
-      return new Response(JSON.stringify({ error: 'Missing text or pdfBase64' }), {
+      return new Response(JSON.stringify({ error: "Missing text or pdfBase64" }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
     if (!GEMINI_API_KEY) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -52,22 +53,23 @@ serve(async (req) => {
       ? `Extract event details from this PDF document (base64 encoded). The PDF content in base64: ${pdfBase64.substring(0, 50000)}`
       : `Extract event details from the following document text:\n\n${text}`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
     const aiResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ parts: [{ text: userContent }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
+        generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
       }),
     });
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
-      console.error('Gemini API error:', aiResponse.status, errText);
+      console.error("Gemini API error:", aiResponse.status, errText);
       return new Response(JSON.stringify({ error: `Gemini API error: ${aiResponse.status}` }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -75,20 +77,22 @@ serve(async (req) => {
     const rawContent = aiData.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!rawContent) {
-      return new Response(JSON.stringify({ error: 'No content returned from Gemini' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      return new Response(JSON.stringify({ error: "No content returned from Gemini" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const plan = parseJsonResponse(rawContent);
 
     return new Response(JSON.stringify({ plan }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error in generate-event-plan:', error);
+    console.error("Error in generate-event-plan:", error);
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
@@ -101,6 +105,6 @@ function parseJsonResponse(raw: string): any {
     if (match) return JSON.parse(match[1].trim());
     const objMatch = raw.match(/\{[\s\S]*\}/);
     if (objMatch) return JSON.parse(objMatch[0]);
-    throw new Error('Could not parse AI response as JSON');
+    throw new Error("Could not parse AI response as JSON");
   }
 }
