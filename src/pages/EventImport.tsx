@@ -29,8 +29,8 @@ function extractGoogleDocId(url: string): string | null {
 const sources = [
   { id: "notion" as const, name: "Notion", desc: "Import from a Notion page", color: "bg-foreground/5" },
   { id: "google_doc" as const, name: "Google Docs", desc: "Import from Google Docs", color: "bg-blue-50" },
-  { id: "pdf" as const, name: "PDF Upload", desc: "Upload a PDF document", color: "bg-red-50" },
   { id: "slack" as const, name: "Slack", desc: "Import from Slack messages", color: "bg-purple-50" },
+  { id: "pdf" as const, name: "PDF Upload", desc: "Upload a PDF document", color: "bg-red-50" },
 ];
 
 async function callGenerateEventPlan(payload: { text?: string; pdfBase64?: string }) {
