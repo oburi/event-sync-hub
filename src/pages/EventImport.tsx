@@ -389,6 +389,23 @@ export default function EventImport() {
               )}
             </div>
           )}
+
+          {/* Slack - coming soon placeholder */}
+          {selected === "slack" && (
+            <div className="space-y-3 animate-fade-in">
+              <div className="rounded-lg border border-border bg-muted/30 p-6 text-center">
+                <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground">Import from Slack</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  Pick a channel, thread, or time frame to import event details from Slack messages.
+                </p>
+                <Button disabled className="gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Connect Slack (Coming Soon)
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       )}
 
