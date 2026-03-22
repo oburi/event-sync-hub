@@ -68,7 +68,7 @@ export default function EditEvent() {
   }, [id]);
 
   const addTask = () => {
-    setTasks((prev) => [...prev, { title: "", description: "", assignedRole: "", time: "", location: "" }]);
+    setTasks((prev) => [...prev, { title: "", description: "", assignedRole: "", assignedVolunteer: "", time: "", location: "" }]);
   };
 
   const updateTask = (index: number, field: keyof TaskItem, value: string) => {
