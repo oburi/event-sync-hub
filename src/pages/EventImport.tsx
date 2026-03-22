@@ -68,7 +68,10 @@ export default function EventImport() {
 
   const handleGoogleAuth = async () => {
     setError(null);
-    const { data, error: fnError } = await supabase.functions.invoke("google-auth");
+    const sessionId = getSessionId();
+    const { data, error: fnError } = await supabase.functions.invoke("google-auth", {
+      body: { sessionId },
+    });
 
     if (fnError || data?.error) {
       setError(data?.error || fnError?.message || "Failed to start Google auth");
