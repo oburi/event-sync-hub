@@ -40,75 +40,75 @@ serve(async (req) => {
     }
 
     const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-    if (!GEMINI_API_KEY) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
+    // Try Gemini first, fall back to Lovable AI
+    if (GEMINI_API_KEY && !pdfBase64) {
+      try {
+        const result = await callGeminiDirect(GEMINI_API_KEY, text!);
+        return new Response(JSON.stringify({ plan: result }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        console.log('Gemini direct failed, falling back to Lovable AI:', e.message);
+      }
+    }
+
+    // Use Lovable AI gateway
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: 'No AI API key configured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Build Gemini request parts
-    const parts: any[] = [];
+    const userContent = pdfBase64
+      ? `Extract event details from this PDF document (base64 encoded). The PDF content in base64: ${pdfBase64.substring(0, 50000)}`
+      : `Extract event details from the following document text:\n\n${text}`;
 
-    if (pdfBase64) {
-      parts.push({
-        inlineData: {
-          mimeType: 'application/pdf',
-          data: pdfBase64,
-        },
-      });
-      parts.push({ text: 'Extract all event details from this PDF document and return structured JSON.' });
-    } else {
-      parts.push({ text: `Extract event details from the following document text:\n\n${text}` });
-    }
-
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-    const geminiResponse = await fetch(geminiUrl, {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ parts }],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.2,
-        },
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userContent },
+        ],
       }),
     });
 
-    if (!geminiResponse.ok) {
-      const errText = await geminiResponse.text();
-      console.error('Gemini API error:', geminiResponse.status, errText);
-      return new Response(JSON.stringify({ error: `Gemini API error: ${geminiResponse.status}` }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    if (!aiResponse.ok) {
+      const errText = await aiResponse.text();
+      console.error('AI gateway error:', aiResponse.status, errText);
+      if (aiResponse.status === 429) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (aiResponse.status === 402) {
+        return new Response(JSON.stringify({ error: 'AI credits exhausted. Please add funds.' }), {
+          status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      return new Response(JSON.stringify({ error: `AI error: ${aiResponse.status}` }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const geminiData = await geminiResponse.json();
-    const rawContent = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+    const aiData = await aiResponse.json();
+    const rawContent = aiData.choices?.[0]?.message?.content;
 
     if (!rawContent) {
-      return new Response(JSON.stringify({ error: 'No content returned from Gemini' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      return new Response(JSON.stringify({ error: 'No content returned from AI' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Parse the JSON response
-    let plan;
-    try {
-      plan = JSON.parse(rawContent);
-    } catch {
-      // Try to extract JSON from markdown code blocks
-      const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (jsonMatch) {
-        plan = JSON.parse(jsonMatch[1].trim());
-      } else {
-        plan = JSON.parse(rawContent.trim());
-      }
-    }
+    const plan = parseJsonResponse(rawContent);
 
     return new Response(JSON.stringify({ plan }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -116,8 +116,38 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in generate-event-plan:', error);
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
+
+async function callGeminiDirect(apiKey: string, text: string) {
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const resp = await fetch(geminiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{ parts: [{ text: `Extract event details from:\n\n${text}` }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
+    }),
+  });
+  if (!resp.ok) throw new Error(`Gemini ${resp.status}`);
+  const data = await resp.json();
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!raw) throw new Error('No content from Gemini');
+  return parseJsonResponse(raw);
+}
+
+function parseJsonResponse(raw: string): any {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (match) return JSON.parse(match[1].trim());
+    // Try to find JSON object in the text
+    const objMatch = raw.match(/\{[\s\S]*\}/);
+    if (objMatch) return JSON.parse(objMatch[0]);
+    throw new Error('Could not parse AI response as JSON');
+  }
+}
