@@ -3,11 +3,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { TopBar } from "@/components/TopBar";
 import { Outlet } from "react-router-dom";
 import { useAppMode } from "@/contexts/AppModeContext";
-import VolunteerDashboard from "@/pages/VolunteerDashboard";
 
 export default function AppLayout() {
-  const { mode } = useAppMode();
-
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -15,7 +12,7 @@ export default function AppLayout() {
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar />
           <main className="flex-1 overflow-auto">
-            {mode === "volunteer" ? <VolunteerDashboard /> : <Outlet />}
+            <Outlet />
           </main>
         </div>
       </div>

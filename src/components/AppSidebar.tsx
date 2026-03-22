@@ -1,6 +1,7 @@
-import { Home, Calendar, Users, CalendarDays, Zap } from "lucide-react";
+import { Home, Calendar, Users, CalendarDays, Zap, Bell } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { useAppMode } from "@/contexts/AppModeContext";
 import {
   Sidebar,
   SidebarContent,
@@ -13,17 +14,27 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const navItems = [
+const organizerNav = [
   { title: "Home", url: "/", icon: Home },
   { title: "Events", url: "/events", icon: Calendar },
   { title: "Calendar", url: "/calendar", icon: CalendarDays },
   { title: "Team", url: "/team", icon: Users },
 ];
 
+const volunteerNav = [
+  { title: "Home", url: "/", icon: Home },
+  { title: "Events", url: "/events", icon: Calendar },
+  { title: "Calendar", url: "/calendar", icon: CalendarDays },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Team", url: "/team", icon: Users },
+];
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
+  const { mode } = useAppMode();
+
+  const navItems = mode === "volunteer" ? volunteerNav : organizerNav;
 
   return (
     <Sidebar collapsible="icon">
@@ -35,7 +46,9 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="animate-fade-in">
               <p className="text-sm font-semibold text-foreground">Syncra</p>
-              <p className="text-[11px] text-muted-foreground">Event Ops</p>
+              <p className="text-[11px] text-muted-foreground">
+                {mode === "volunteer" ? "Volunteer" : "Event Ops"}
+              </p>
             </div>
           )}
         </div>
