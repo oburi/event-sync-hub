@@ -19,6 +19,7 @@ import VolunteerSetup from "@/pages/VolunteerSetup";
 import TeamPage from "@/pages/TeamPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import CalendarPage from "@/pages/CalendarPage";
+import VolunteerEventDashboard from "@/pages/VolunteerEventDashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/org-setup" element={<OrgSetup />} />
               <Route path="/volunteer-setup" element={<VolunteerSetup />} />
               <Route path="/volunteer/:eventId/:volunteerId" element={<VolunteerView />} />
+              <Route path="/volunteer/event/:eventId" element={<VolunteerEventDashboard />} />
               <Route element={<AppLayout />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/events" element={<EventsPage />} />
