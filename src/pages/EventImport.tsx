@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Upload, Link as LinkIcon, Loader2, CheckCircle2, Sparkles, LogIn, FileUp, MessageSquare } from "lucide-react";
 import { NotionLogo } from "@/components/icons/NotionLogo";
+import { SlackLogo } from "@/components/icons/SlackLogo";
 import { GoogleDocsLogo } from "@/components/icons/GoogleDocsLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
