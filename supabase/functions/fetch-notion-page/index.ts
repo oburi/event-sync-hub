@@ -75,7 +75,6 @@ serve(async (req) => {
 
   try {
     const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY")?.trim();
-    console.log("NOTION_API_KEY length:", NOTION_API_KEY?.length, "prefix:", NOTION_API_KEY?.substring(0, 7));
     if (!NOTION_API_KEY) {
       return new Response(
         JSON.stringify({ error: "NOTION_API_KEY is not configured" }),
@@ -106,13 +105,9 @@ serve(async (req) => {
     };
 
     // Fetch page metadata for the title
-    console.log("Fetching page:", `https://api.notion.com/v1/pages/${pageId}`);
-    console.log("Auth header:", `Bearer ${NOTION_API_KEY.substring(0, 10)}...`);
     const pageRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, { headers });
     if (!pageRes.ok) {
-      const errText = await pageRes.text();
-      console.error("Notion API error response:", errText);
-      const err = JSON.parse(errText).catch?.(() => ({})) || JSON.parse(errText);
+      const err = await pageRes.json().catch(() => ({}));
       const msg = err.message || `Notion API error: ${pageRes.status}`;
       return new Response(
         JSON.stringify({ error: msg }),
