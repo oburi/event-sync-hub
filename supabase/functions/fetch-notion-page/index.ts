@@ -74,7 +74,8 @@ serve(async (req) => {
   }
 
   try {
-    const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY");
+    const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY")?.trim();
+    console.log("NOTION_API_KEY length:", NOTION_API_KEY?.length, "prefix:", NOTION_API_KEY?.substring(0, 7));
     if (!NOTION_API_KEY) {
       return new Response(
         JSON.stringify({ error: "NOTION_API_KEY is not configured" }),
