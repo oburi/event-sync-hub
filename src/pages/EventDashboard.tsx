@@ -375,12 +375,18 @@ export default function EventDashboard() {
               <div className="space-y-2">
                 {contacts.map(member => (
                   <div key={member.id} className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium text-primary">
-                      {member.name.split(' ').map(n => n[0]).join('')}
+                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium text-primary shrink-0">
+                      {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs font-medium text-foreground">{member.name}</p>
                       <p className="text-[10px] text-muted-foreground">{member.role}</p>
+                      {member.email && (
+                        <a href={`mailto:${member.email}`} className="text-[10px] text-primary hover:underline">{member.email}</a>
+                      )}
+                      {member.phone && (
+                        <p className="text-[10px] text-muted-foreground">{member.phone}</p>
+                      )}
                     </div>
                   </div>
                 ))}
