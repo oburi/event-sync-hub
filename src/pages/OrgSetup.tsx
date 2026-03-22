@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Plus, X, Zap, Users, Hand } from "lucide-react";
+import { ArrowRight, Plus, X, Users, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -25,9 +25,6 @@ export default function OrgSetup() {
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="w-full max-w-md space-y-8 animate-fade-in">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
             <span className="text-lg font-semibold tracking-tight">Syncra</span>
           </div>
           <div>
@@ -69,9 +66,6 @@ export default function OrgSetup() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <div className="w-full max-w-lg space-y-8 animate-fade-in">
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
           <span className="text-lg font-semibold tracking-tight">Syncra</span>
         </div>
 

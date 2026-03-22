@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Calendar, Clock, MapPin, Phone, Bell, Zap, Loader2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Phone, Bell, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents, mockTimeline, mockVolunteerView, mockTeam } from "@/lib/mock-data";
 import type { Event } from "@/lib/mock-data";
@@ -108,7 +108,6 @@ export default function VolunteerView() {
       {/* Header */}
       <div className="bg-primary px-5 pt-12 pb-6">
         <div className="flex items-center gap-2 mb-4">
-          <Zap className="h-4 w-4 text-primary-foreground/80" />
           <span className="text-xs font-medium text-primary-foreground/80">Syncra</span>
         </div>
         <h1 className="text-xl font-semibold text-primary-foreground">{event.name}</h1>

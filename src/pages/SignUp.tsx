@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleLogo } from "@/components/icons/GoogleLogo";
@@ -14,9 +14,6 @@ export default function SignUp() {
       <div className="hidden lg:flex lg:w-2/5 bg-primary items-center justify-center p-12">
         <div className="max-w-sm">
           <div className="flex items-center gap-2.5 mb-10">
-            <div className="h-11 w-11 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
-              <Zap className="h-5 w-5 text-primary-foreground" />
-            </div>
             <span className="text-xl font-semibold text-primary-foreground tracking-tight">Syncra</span>
           </div>
           <h2 className="font-serif text-4xl text-primary-foreground leading-tight">
@@ -32,9 +29,6 @@ export default function SignUp() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-6 animate-fade-in">
           <div className="lg:hidden flex items-center gap-2 mb-6">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
             <span className="text-lg font-semibold tracking-tight">Syncra</span>
           </div>
 
