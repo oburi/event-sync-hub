@@ -12,6 +12,7 @@ import ConflictDrawer from "@/components/ConflictDrawer";
 import { NotionLogo } from "@/components/icons/NotionLogo";
 import { GoogleDocsLogo } from "@/components/icons/GoogleDocsLogo";
 import type { Event, Task, TimelineItem, Source, TeamMember } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 
 const isUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 

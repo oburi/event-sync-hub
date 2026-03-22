@@ -4,6 +4,7 @@ import { Calendar, AlertTriangle, Clock, Plus, ArrowRight, CheckCircle2, Loader2
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 
 interface DbEvent {
   id: string;

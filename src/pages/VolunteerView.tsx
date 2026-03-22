@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, Phone, Bell, Zap, Loader2 } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents, mockTimeline, mockVolunteerView, mockTeam } from "@/lib/mock-data";
 import type { Event } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 
 const isUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 

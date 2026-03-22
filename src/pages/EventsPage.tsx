@@ -4,6 +4,7 @@ import { Plus, Calendar, Clock, CheckCircle2, FileEdit, Loader2, Upload } from "
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { mockEvents } from "@/lib/mock-data";
+import { formatLocalDate } from "@/lib/utils";
 
 interface DbEvent {
   id: string;

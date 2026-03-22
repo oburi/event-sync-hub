@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Users, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { formatLocalDate } from "@/lib/utils";
 
 interface PlanTask {
   title: string;
