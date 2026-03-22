@@ -105,13 +105,9 @@ serve(async (req) => {
     };
 
     // Fetch page metadata for the title
-    console.log("Fetching page:", `https://api.notion.com/v1/pages/${pageId}`);
-    console.log("Auth header:", `Bearer ${NOTION_API_KEY.substring(0, 10)}...`);
     const pageRes = await fetch(`https://api.notion.com/v1/pages/${pageId}`, { headers });
     if (!pageRes.ok) {
-      const errText = await pageRes.text();
-      console.error("Notion API error response:", errText);
-      const err = JSON.parse(errText).catch?.(() => ({})) || JSON.parse(errText);
+      const err = await pageRes.json().catch(() => ({}));
       const msg = err.message || `Notion API error: ${pageRes.status}`;
       return new Response(
         JSON.stringify({ error: msg }),
