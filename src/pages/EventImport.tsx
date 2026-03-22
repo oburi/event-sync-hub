@@ -44,6 +44,8 @@ export default function EventImport() {
     if (searchParams.get('google_connected') === 'true') {
       setGoogleConnected(true);
       setSelected('google_doc');
+      // Clean the query param from the URL
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, [searchParams]);
 
